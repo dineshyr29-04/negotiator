@@ -77,7 +77,7 @@
       <div class="flex items-center space-x-2">
         <span id="sync-status" class="inline-flex items-center space-x-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Synced with Phone &amp; Laptop</span>
+          <span>Live WebSocket: Synced</span>
         </span>
       </div>
     </div>
@@ -86,30 +86,45 @@
   <!-- Main Dual-Pane Studio -->
   <main class="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-8 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
     
-    <!-- LEFT SIDE: The Voice Handset (Touch/Speak Phone Control) -->
-    <div class="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 border border-warm-border shadow-sm flex flex-col items-center text-center space-y-6">
+    <!-- LEFT SIDE: The Voice Handset (Phone Side) -->
+    <div class="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 border border-warm-border shadow-sm flex flex-col items-center text-center space-y-5">
       
       <div>
         <span class="text-[11px] font-bold uppercase tracking-wider text-brand-700 bg-brand-100 px-3 py-1 rounded-full">Device 1: Phone Handset</span>
         <h2 class="font-serif text-2xl sm:text-3xl text-warm-text mt-2 font-bold">Talk as the Vendor</h2>
-        <p class="text-xs text-warm-muted mt-1 max-w-sm">Tap the mic, quote your price or push back. The AI agent counters and syncs the transcript live to both devices.</p>
+        <p class="text-xs text-warm-muted mt-1 max-w-sm">Speak into your phone just like a phone call. The AI negotiates back in natural voice.</p>
       </div>
 
-      <!-- Big Glowing Tactile Speak Button -->
-      <div class="py-4">
+      <!-- Hands-Free Auto-Call Mode Toggle Banner -->
+      <div class="w-full p-3 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between text-left">
+        <div>
+          <div class="text-xs font-bold text-amber-900 flex items-center space-x-1.5">
+            <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+            <span>Hands-Free Auto-Call Mode</span>
+          </div>
+          <div class="text-[10px] text-amber-800">Auto-detects silence ➔ Replies automatically without touching screen!</div>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer ml-2">
+          <input id="hands-free-toggle" type="checkbox" checked class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+        </label>
+      </div>
+
+      <!-- Tactile Speak Button -->
+      <div class="py-2">
         <button id="phone-mic-btn" onclick="togglePhoneMic()" class="w-32 h-32 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-brand-600 to-amber-500 text-white flex flex-col items-center justify-center shadow-2xl shadow-brand-500/40 transition transform active:scale-95 focus:outline-none pulse-ring">
           <svg id="phone-mic-icon" class="w-12 h-12 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
-          <span id="phone-mic-label" class="text-xs font-bold uppercase tracking-wider">Tap to Speak</span>
+          <span id="phone-mic-label" class="text-xs font-bold uppercase tracking-wider">Tap to Start</span>
         </button>
       </div>
 
       <!-- Current Spoken Text Preview -->
       <div class="w-full bg-warm-bg/70 rounded-2xl p-4 border border-warm-border text-left">
         <div class="flex items-center justify-between text-[11px] font-bold text-warm-muted uppercase mb-1">
-          <span>Your Spoken Words</span>
-          <span id="stt-state" class="text-emerald-700">Ready</span>
+          <span>What you speak:</span>
+          <span id="stt-state" class="text-emerald-700 font-bold">● Ready</span>
         </div>
-        <textarea id="vendor-text-input" rows="2" class="w-full bg-white p-2.5 rounded-xl border border-warm-border text-xs sm:text-sm font-medium focus:outline-none" placeholder="Speak into mic or type here...">I cannot go below $1,950 for this block, that is our final corporate rate.</textarea>
+        <textarea id="vendor-text-input" rows="2" class="w-full bg-white p-2.5 rounded-xl border border-warm-border text-xs sm:text-sm font-medium focus:outline-none" placeholder="Speak into mic or tap a sample quote below...">I cannot go below $1,950 for this block, that is our final corporate rate.</textarea>
         
         <!-- Quick Preset Quotes -->
         <div class="flex flex-wrap gap-1.5 mt-2">
@@ -117,8 +132,8 @@
           <button onclick="setSample('If you pay today, I can do $1,700.')" class="text-[10px] px-2.5 py-1 rounded-lg bg-white border border-warm-border hover:bg-brand-50 font-medium">"If you pay today, $1,700"</button>
         </div>
 
-        <button onclick="sendVendorTurn()" class="w-full mt-3 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs shadow-md transition flex items-center justify-center space-x-1.5">
-          <span>Send Spoken Turn ➔</span>
+        <button id="send-turn-btn" onclick="sendVendorTurn()" class="w-full mt-3 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs shadow-md transition flex items-center justify-center space-x-1.5">
+          <span>Send Spoken Turn (Manual) ➔</span>
         </button>
       </div>
 
@@ -128,15 +143,15 @@
           <input id="audio-enable-toggle" type="checkbox" checked class="w-4 h-4 accent-brand-600 rounded">
           <span>Play AI Voice on this device</span>
         </label>
-        <span class="text-[10px] font-semibold text-brand-700">Guy Neural Voice</span>
+        <span class="text-[10px] font-semibold text-brand-700">Groq LLM + Edge TTS</span>
       </div>
 
     </div>
 
     <!-- RIGHT SIDE: The Live Scrolling Transcription Terminal (Laptop/Auditor Side) -->
-    <div class="lg:col-span-7 bg-white rounded-3xl p-5 sm:p-7 border border-warm-border shadow-sm flex flex-col h-[640px]">
+    <div class="lg:col-span-7 bg-white rounded-3xl p-5 sm:p-7 border border-warm-border shadow-sm flex flex-col h-[650px]">
       
-      <div class="flex items-center justify-between pb-4 border-b border-warm-border">
+      <div class="flex items-center justify-between pb-3.5 border-b border-warm-border">
         <div>
           <span class="text-[11px] font-bold uppercase tracking-wider text-brand-700 bg-brand-100 px-3 py-1 rounded-full">Device 2: Live Call Terminal</span>
           <h3 class="font-serif text-xl sm:text-2xl font-bold text-warm-text mt-1">Real-Time Call Transcript</h3>
@@ -180,7 +195,7 @@
       <!-- Human Co-Pilot Whisper Bar -->
       <div class="pt-3 border-t border-warm-border mt-3">
         <label class="block text-[10px] font-bold uppercase tracking-wider text-brand-800 mb-1">
-          🤫 Human Whisper Bar (Laptop User can inject tips to Agent)
+          🤫 Human Whisper Bar (Laptop User can inject tips to Agent mid-call)
         </label>
         <div class="flex gap-2">
           <input id="whisper-input" type="text" class="flex-1 p-2.5 rounded-xl border border-warm-border text-xs focus:outline-none focus:ring-1 focus:ring-brand-500" placeholder="Type private advice (e.g. 'Demand free parking before agreeing')...">
@@ -206,9 +221,11 @@
     let targetPrice = 1500;
     let batnaPrice = 1680;
     let activeWhisper = "";
+    let silenceTimer = null;
 
     const speechPlayer = document.getElementById('global-speech-player');
     const transcriptFeed = document.getElementById('transcript-feed');
+    const handsFreeToggle = document.getElementById('hands-free-toggle');
 
     // 1. WebSocket Real-Time Connection
     function connectWebSocket() {
@@ -219,7 +236,7 @@
       socket.onopen = () => {
         document.getElementById('sync-status').innerHTML = `
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Live WebSocket: Connected</span>
+          <span>Live WebSocket: Synced</span>
         `;
       };
 
@@ -289,7 +306,12 @@
 
       // Play audio if enabled on this device
       if (document.getElementById('audio-enable-toggle').checked) {
-        playNeuralVoice(data.agent_speech);
+        await playNeuralVoice(data.agent_speech);
+      } else {
+        // If audio is muted, re-arm listening in hands-free mode
+        if (handsFreeToggle.checked) {
+          setTimeout(resumeListeningAfterAgent, 500);
+        }
       }
     }
 
@@ -302,13 +324,30 @@
         });
         const blob = await res.blob();
         speechPlayer.src = URL.createObjectURL(blob);
+
+        // When AI stops speaking -> automatically open mic again for vendor!
+        speechPlayer.onended = () => {
+          if (handsFreeToggle.checked) {
+            resumeListeningAfterAgent();
+          }
+        };
+
         speechPlayer.play();
       } catch (err) {
         console.error(err);
       }
     }
 
-    // 3. Microphone (Speech-To-Text)
+    function resumeListeningAfterAgent() {
+      const sttState = document.getElementById('stt-state');
+      sttState.innerText = "● Listening to Vendor...";
+      sttState.className = "text-amber-700 font-bold animate-pulse";
+      if (!isListening && recognition) {
+        try { recognition.start(); } catch (e) {}
+      }
+    }
+
+    // 3. Microphone & Hands-Free Auto Silence Detection
     function togglePhoneMic() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
@@ -323,15 +362,16 @@
 
       if (!recognition) {
         recognition = new SpeechRecognition();
-        recognition.continuous = false;
+        recognition.continuous = true;
         recognition.interimResults = true;
         recognition.lang = 'en-US';
 
         recognition.onstart = () => {
           isListening = true;
           micBtn.classList.add('scale-105', 'ring-4', 'ring-brand-400');
-          micLabel.innerText = "Listening...";
-          sttState.innerText = "Listening to you...";
+          micLabel.innerText = "In Call";
+          sttState.innerText = "● Listening...";
+          sttState.className = "text-emerald-700 font-bold";
         };
 
         recognition.onresult = (e) => {
@@ -339,14 +379,28 @@
           for (let i = e.resultIndex; i < e.results.length; i++) {
             text += e.results[i][0].transcript;
           }
-          textInput.value = text;
+          if (text.trim()) {
+            textInput.value = text;
+          }
+
+          // Hands-free silence timer: if user stops speaking for 1.2s -> auto send!
+          if (handsFreeToggle.checked && text.trim().length > 3) {
+            clearTimeout(silenceTimer);
+            silenceTimer = setTimeout(() => {
+              if (isListening) {
+                try { recognition.stop(); } catch(err) {}
+                sendVendorTurn();
+              }
+            }, 1200);
+          }
         };
 
         recognition.onend = () => {
           isListening = false;
           micBtn.classList.remove('scale-105', 'ring-4', 'ring-brand-400');
-          micLabel.innerText = "Tap to Speak";
-          sttState.innerText = "Ready to Send";
+          micLabel.innerText = "Tap to Start";
+          sttState.innerText = "● Standby";
+          sttState.className = "text-warm-muted font-bold";
         };
       }
 
@@ -360,10 +414,11 @@
     // 4. Send Vendor Turn via WebSocket
     function sendVendorTurn() {
       const text = document.getElementById('vendor-text-input').value;
-      if (!text.trim()) {
-        alert("Please speak or type a vendor statement first.");
-        return;
-      }
+      if (!text.trim()) return;
+
+      const sttState = document.getElementById('stt-state');
+      sttState.innerText = "AI Reasoning...";
+      sttState.className = "text-brand-700 font-bold animate-pulse";
 
       if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify({
@@ -377,12 +432,15 @@
         }));
         activeWhisper = "";
       } else {
-        alert("Reconnecting WebSocket... please try again in a second.");
+        alert("Reconnecting WebSocket... please wait a second.");
       }
     }
 
     function setSample(quote) {
       document.getElementById('vendor-text-input').value = quote;
+      if (handsFreeToggle.checked) {
+        sendVendorTurn();
+      }
     }
 
     // 5. Human Whisper

@@ -1,17 +1,29 @@
+import os
 import re
+import json
 from typing import Dict, Any, List
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Optional Groq client initialization
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "").strip()
+groq_client = None
+if GROQ_API_KEY:
+    try:
+        from groq import Groq
+        groq_client = Groq(api_key=GROQ_API_KEY)
+    except Exception as e:
+        print(f"Notice: Groq initialization deferred: {e}")
 
 class NegotiationEngine:
     """
-    Implements dialogue strategy informed by EACL 2024 Survey ('Let's Negotiate!'):
-    - ZOPA (Zone of Possible Agreement) Calculation
-    - BATNA (Best Alternative to a Negotiated Agreement) Reference
-    - Dialogue Acts Taxonomy (Anchor, Inquiry, Concession, Leverage, Agreement)
+    Implements dialogue strategy informed by EACL 2024 Survey ('Let's Negotiate!')
+    Powered by Groq Llama 3 (sub-300ms) with seamless rule-based fallback.
     """
 
     @staticmethod
     def extract_price(text: str) -> float | None:
-        """Finds numeric price mentions like $1,500, 1500, etc."""
         match = re.search(r'\$?([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?|[0-9]+)', text)
         if match:
             clean = match.group(1).replace(',', '')
@@ -32,71 +44,143 @@ class NegotiationEngine:
         whisper_instruction: str = ""
     ) -> Dict[str, Any]:
         """
-        Evaluates vendor response and determines the agent's next dialogue act and counter-offer.
-        Incorporates user 'Whisper' interventions and BATNA leverage.
+        Evaluates vendor response and determines agent's spoken counter-speech.
+        Uses Groq LLM if GROQ_API_KEY is available, otherwise uses EACL rule engine.
         """
+        # If Groq client is active, use high-speed LLM reasoning
+        if groq_client:
+            try:
+                return cls._evaluate_with_groq(
+                    user_text=user_text,
+                    current_target=current_target,
+                    last_offer=last_offer,
+                    round_num=round_num,
+                    batna_price=batna_price,
+                    whisper_instruction=whisper_instruction
+                )
+            except Exception as e:
+                print(f"Groq API call failed or timed out: {e}. Falling back to EACL rule engine.")
+
+        # Fallback to EACL 2024 Rule Engine
+        return cls._evaluate_rule_based(
+            user_text=user_text,
+            current_target=current_target,
+            last_offer=last_offer,
+            round_num=round_num,
+            batna_price=batna_price,
+            whisper_instruction=whisper_instruction
+        )
+
+    @classmethod
+    def _evaluate_with_groq(
+        cls,
+        user_text: str,
+        current_target: float,
+        last_offer: float,
+        round_num: int,
+        batna_price: float,
+        whisper_instruction: str
+    ) -> Dict[str, Any]:
+        effective_batna = batna_price if batna_price > 0 else round(current_target * 1.15, 2)
+        
+        system_prompt = f"""You are 'The Negotiator', an expert procurement voice AI agent negotiating live over the phone with a business vendor.
+You speak naturally, confidently, with short conversational phone cadence (1 to 2 sentences maximum! No bullet points, no robotic speech).
+
+Negotiation Parameters:
+- Client Target Budget: ${current_target:,.2f}
+- Alternative Competitor Quote (BATNA): ${effective_batna:,.2f}
+- Current Round: {round_num}
+- Human Co-Pilot Whisper Instruction: "{whisper_instruction}"
+
+Rules from EACL 2024 ('Let's Negotiate!'):
+1. If human whisper instruction is given, you MUST incorporate it into your reply.
+2. If vendor price <= ${current_target:,.2f}, close the deal enthusiastically.
+3. If vendor resists or rejects, cite your BATNA (${effective_batna:,.2f}) as polite leverage and offer package incentives (immediate payment, recurring renewal).
+4. Do not concede in big leaps; concede incrementally.
+
+Return ONLY a valid JSON object with EXACTLY this structure:
+{{
+  "agent_speech": "What you speak aloud to the vendor (1-2 sentences)",
+  "counter_price": 1650.0,
+  "detected_price": 1950.0,
+  "dialogue_act": "BATNA Leverage / Concession Curve / Agreement",
+  "sentiment": "Vendor Yielding / Agreement Secured / Firm Resistance",
+  "status": "counter_offered" or "deal_closed"
+}}"""
+
+        response = groq_client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Vendor just said: \"{user_text}\""}
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.4,
+            max_tokens=300
+        )
+
+        content = response.choices[0].message.content
+        data = json.loads(content)
+        data["round"] = round_num + 1
+        data["batna_price"] = effective_batna
+        return data
+
+    @classmethod
+    def _evaluate_rule_based(
+        cls,
+        user_text: str,
+        current_target: float,
+        last_offer: float,
+        round_num: int,
+        batna_price: float,
+        whisper_instruction: str
+    ) -> Dict[str, Any]:
         detected_price = cls.extract_price(user_text) or last_offer
         lower_text = user_text.lower()
         effective_batna = batna_price if batna_price > 0 else round(current_target * 1.15, 2)
 
-        # Classify Vendor Dialogue Act (EACL 2024 Taxonomy)
         is_rejection = any(w in lower_text for w in ["no", "cannot", "impossible", "take it or leave", "firm", "final", "bottom line"])
         is_concession = any(w in lower_text for w in ["can do", "maybe", "discount", "meet in middle", "deal", "fine", "ok", "okay", "alright"])
 
-        # Check if user injected a human whisper instruction
         whisper_prefix = ""
         if whisper_instruction.strip():
-            whisper_prefix = f"[Human Intervened: '{whisper_instruction.strip()}'] "
+            whisper_prefix = f"Regarding {whisper_instruction.strip()}, "
 
-        # ZOPA Check: Target to Vendor Offer
         zopa_spread = detected_price - current_target
 
         if detected_price <= current_target:
             dialogue_act = "Agreement & Package Closure"
             agent_speech = (
                 f"{whisper_prefix}That is acceptable. At ${detected_price:,.2f}, we have an agreement. "
-                "Please forward the written agreement and our procurement team will release the deposit today."
+                "Please send over the contract and our procurement team will approve the deposit today."
             )
             status = "deal_closed"
             counter = detected_price
             sentiment = "Agreement Secured"
-
         elif is_concession or (detected_price < last_offer):
             dialogue_act = "Calculated Concession (Tit-for-Tat)"
-            # Concede small fraction towards the vendor
             concession_step = round(zopa_spread * 0.35, 2)
             counter = round(current_target + concession_step, 2)
-            
-            if whisper_instruction:
-                agent_speech = f"{whisper_prefix}Understood. In light of that, could you meet us at ${counter:,.2f} if we finalize right now?"
-            else:
-                agent_speech = (
-                    f"We appreciate the movement down to ${detected_price:,.2f}. "
-                    f"If you can bridge the remaining difference at ${counter:,.2f} and include complimentary standard handling, "
-                    "we will sign off on the PO immediately."
-                )
+            agent_speech = (
+                f"{whisper_prefix}We appreciate the movement to ${detected_price:,.2f}. "
+                f"If you can bridge the difference at ${counter:,.2f} and include complimentary standard handling, we will sign off immediately."
+            )
             status = "counter_offered"
             sentiment = "Vendor Yielding"
-
         elif is_rejection:
             dialogue_act = "BATNA Leverage & Value Trade"
             counter = round(current_target * 1.06, 2)
-            
-            if whisper_instruction:
-                agent_speech = f"{whisper_prefix}Regarding your quote, we have a firm alternative at ${effective_batna:,.2f}. Can you match ${counter:,.2f}?"
-            else:
-                agent_speech = (
-                    f"I understand your position. However, our alternative option (BATNA) is currently quoted at ${effective_batna:,.2f}. "
-                    f"We strongly prefer doing business with you—if we guarantee immediate ACH settlement, can you meet at ${counter:,.2f}?"
-                )
+            agent_speech = (
+                f"{whisper_prefix}I understand your position. However, our alternative option (BATNA) is currently quoted at ${effective_batna:,.2f}. "
+                f"We prefer working with you—if we guarantee immediate ACH settlement, can you meet at ${counter:,.2f}?"
+            )
             status = "leverage_applied"
             sentiment = "Overcoming Resistance"
-
         else:
             dialogue_act = "Exploratory Counter & Package Bargain"
             counter = round(current_target + (zopa_spread * 0.45), 2)
             agent_speech = (
-                f"Thank you for clarifying. At ${detected_price:,.2f}, that sits just outside our budget ceiling. "
+                f"{whisper_prefix}Thank you for clarifying. At ${detected_price:,.2f}, that sits just outside our budget ceiling. "
                 f"Can we meet in the middle at ${counter:,.2f} for an immediate order?"
             )
             status = "counter_offered"
@@ -110,16 +194,11 @@ class NegotiationEngine:
             "sentiment": sentiment,
             "dialogue_act": dialogue_act,
             "batna_price": effective_batna,
-            "zopa_gap": zopa_spread,
             "round": round_num + 1
         }
 
     @classmethod
     def generate_war_room_simulation(cls, category: str, target: float) -> List[Dict[str, Any]]:
-        """
-        Simulates 3 parallel vendor phone calls applying EACL 2024 principles:
-        Anchoring, BATNA comparisons, and package trade-offs.
-        """
         vendors_data = [
             {
                 "vendor_name": "Apex Premier Logistics",
@@ -140,10 +219,10 @@ class NegotiationEngine:
                 "vendor_name": "Metro Skyline Services",
                 "phone": "+1 (555) 781-9021",
                 "initial_quote": round(target * 1.45, 2),
-                "final_price": round(target * 0.98, 2),  # Winner below target!
+                "final_price": round(target * 0.98, 2),
                 "rounds": [
                     {"speaker": "Vendor", "text": f"Normally we quote ${round(target * 1.45):,} for this specification."},
-                    {"speaker": "Agent", "text": f"Apex has already offered us near ${round(target * 1.02):,}. If you beat that under ${round(target):,}, the contract is yours today."},
+                    {"speaker": "Agent", "text": f"Apex offered us near ${round(target * 1.02):,}. If you beat that under ${round(target):,}, the contract is yours today."},
                     {"speaker": "Vendor", "text": f"Understood. We will match and beat at ${round(target * 0.98):,} flat, and bundle the priority package."}
                 ],
                 "perks": "Priority tier upgrade + zero cancellation fee",
