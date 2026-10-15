@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+/* ── Custom Crystal Glass Design System ── */
+
 body {
   background-color: #FAF4EE;
   color: #1C1512;
@@ -25,6 +27,7 @@ body {
 .glass-inner {
   background: rgba(255,255,255,0.65);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255,255,255,0.8);
 }
 
