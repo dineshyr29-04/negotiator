@@ -1,6 +1,6 @@
 import os
-from typing import Optional
-from fastapi import FastAPI, HTTPException
+from typing import Optional, List
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -43,6 +43,17 @@ class WarRoomRequest(BaseModel):
 class ScoutRequest(BaseModel):
     query: str
     target_budget: float
+
+# WebSocket Connection Manager for Multi-Device Sync (Phone <-> Laptop)
+active_call_sockets: List[WebSocket] = []
+
+async def broadcast_call_event(data: dict):
+    for ws in list(active_call_sockets):
+        try:
+            await ws.send_json(data)
+        except Exception:
+            if ws in active_call_sockets:
+                active_call_sockets.remove(ws)
 
 # Pre-seeded evidence records
 EVIDENCE_RECORDS = [
@@ -144,11 +155,67 @@ async def roleplay_turn(req: RoleplayRequest):
     )
     return evaluation
 
+@app.websocket("/ws/call")
+async def call_sync_websocket(websocket: WebSocket):
+    """
+    Real-Time WebSocket Sync between Phone (Handset) & Laptop (Command Terminal).
+    Broadcasts spoken turns, AI reasoning, whisper prompts, and deal updates instantaneously!
+    """
+    await websocket.accept()
+    active_call_sockets.append(websocket)
+    try:
+        while True:
+            data = await websocket.receive_json()
+            event_type = data.get("type")
+
+            if event_type == "vendor_speech":
+                user_text = data.get("text", "")
+                target_price = float(data.get("target_price", 1500))
+                last_offer = float(data.get("last_offer", 2000))
+                whisper = data.get("whisper", "")
+                batna = float(data.get("batna_price", 1680))
+                round_num = int(data.get("round", 1))
+
+                eval_result = NegotiationEngine.evaluate_roleplay_turn(
+                    user_text=user_text,
+                    current_target=target_price,
+                    last_offer=last_offer,
+                    round_num=round_num,
+                    batna_price=batna,
+                    whisper_instruction=whisper
+                )
+
+                await broadcast_call_event({
+                    "type": "turn_update",
+                    "vendor_speech": user_text,
+                    "agent_speech": eval_result["agent_speech"],
+                    "counter_price": eval_result["counter_price"],
+                    "detected_price": eval_result["detected_price"],
+                    "dialogue_act": eval_result["dialogue_act"],
+                    "status": eval_result["status"],
+                    "sentiment": eval_result["sentiment"],
+                    "round": eval_result["round"],
+                    "whisper_used": whisper
+                })
+
+            elif event_type == "whisper":
+                await broadcast_call_event({
+                    "type": "whisper_alert",
+                    "whisper": data.get("whisper", "")
+                })
+
+            elif event_type == "takeover":
+                await broadcast_call_event({
+                    "type": "takeover_state",
+                    "is_human": data.get("is_human", False)
+                })
+
+    except WebSocketDisconnect:
+        if websocket in active_call_sockets:
+            active_call_sockets.remove(websocket)
+
 @app.post("/api/war-room")
 async def simulate_war_room(req: WarRoomRequest):
-    """
-    Runs multi-agent parallel negotiation with 3 competing vendors.
-    """
     simulation = NegotiationEngine.generate_war_room_simulation(
         category=req.category,
         target=req.target_budget
@@ -157,9 +224,6 @@ async def simulate_war_room(req: WarRoomRequest):
 
 @app.post("/api/scout")
 async def scout_vendors(req: ScoutRequest):
-    """
-    Finds real vendor targets based on the user's requirement.
-    """
     vendors = ScoutService.discover_vendors(
         query=req.query,
         target_budget=req.target_budget
@@ -169,6 +233,15 @@ async def scout_vendors(req: ScoutRequest):
 @app.get("/api/records")
 async def get_records():
     return EVIDENCE_RECORDS
+
+# Dedicated Routes for Dual-Device Call Screen
+@app.get("/call")
+@app.get("/phone")
+async def call_page():
+    phone_path = os.path.join(STATIC_DIR, "phone.html")
+    if os.path.exists(phone_path):
+        return FileResponse(phone_path)
+    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
 
 # Static hosting
 if os.path.exists(STATIC_DIR):
