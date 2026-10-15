@@ -54,7 +54,7 @@
                   radial-gradient(circle at 50% 88%, rgba(251, 146, 60, 0.10) 0%, transparent 60%);
     }
     .glass-card {
-      background: rgba(255, 255, 255, 0.76);
+      background: rgba(255, 255, 255, 0.78);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       border: 1px solid rgba(255, 255, 255, 0.85);
@@ -69,8 +69,31 @@
       box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.45);
       animation: pulseAnim 2.2s infinite cubic-bezier(0.66, 0, 0, 1);
     }
+    .pulse-ring-green {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5);
+      animation: pulseGreenAnim 1.8s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
     @keyframes pulseAnim {
       to { box-shadow: 0 0 0 28px rgba(234, 88, 12, 0); }
+    }
+    @keyframes pulseGreenAnim {
+      to { box-shadow: 0 0 0 26px rgba(16, 185, 129, 0); }
+    }
+    /* Animated Audio Equalizer Bars */
+    .eq-bar {
+      display: inline-block;
+      width: 4px;
+      background-color: currentColor;
+      border-radius: 4px;
+      animation: eqPulse 0.9s ease-in-out infinite alternate;
+    }
+    .eq-bar:nth-child(1) { height: 14px; animation-delay: 0.1s; }
+    .eq-bar:nth-child(2) { height: 26px; animation-delay: 0.28s; }
+    .eq-bar:nth-child(3) { height: 12px; animation-delay: 0.42s; }
+    .eq-bar:nth-child(4) { height: 22px; animation-delay: 0.18s; }
+    @keyframes eqPulse {
+      0% { transform: scaleY(0.25); }
+      100% { transform: scaleY(1.15); }
     }
   </style>
 </head>
@@ -107,7 +130,7 @@
       
       <div class="lg:col-span-7 space-y-4 sm:space-y-6">
         <div class="inline-flex items-center space-x-2 text-[11px] sm:text-xs uppercase tracking-widest font-semibold text-brand-800 px-3 py-1 rounded-full bg-brand-100/70 border border-brand-200/50">
-          <span>Informed by EACL 2024 Negotiation Dialogue Survey</span>
+          <span>Informed by EACL 2024 Negotiation Dialogue Survey • Groq Qwen 27B</span>
         </div>
 
         <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-crystal-text leading-[1.12] tracking-tight">
@@ -164,13 +187,15 @@
 
     </div>
 
-    <!-- 1. PURE CRYSTAL LIVE CALL STUDIO (Exact Match to Reference Screenshot) -->
+    <!-- 1. PURE CRYSTAL LIVE CALL STUDIO WITH ACTIVE TURN INDICATOR -->
     <section id="call-studio" class="pt-4 scroll-mt-20">
-      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-2">
+      
+      <!-- Studio Header -->
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-4 gap-2">
         <div>
           <span class="text-[10px] font-bold uppercase tracking-wider text-brand-800 bg-brand-100/70 border border-brand-200/50 px-3 py-1 rounded-full">Interactive Pitch Studio</span>
           <h2 class="font-serif text-2xl sm:text-3xl text-crystal-text mt-2 font-bold">The Negotiator • Dual-Device Live Studio</h2>
-          <p class="text-crystal-muted text-xs sm:text-sm mt-0.5">Dials merchant, enforces company policy, reasons with Groq Llama 3 in Jenny female voice, and saves to MongoDB.</p>
+          <p class="text-crystal-muted text-xs sm:text-sm mt-0.5">Dials merchant, enforces company policy, reasons with Groq Qwen 27B in Jenny female voice, and saves to MongoDB.</p>
         </div>
         <div class="flex items-center space-x-2">
           <span id="call-active-badge" class="inline-flex items-center space-x-1.5 text-xs font-semibold px-3 py-1 rounded-full glass-inner text-crystal-muted">
@@ -180,10 +205,37 @@
         </div>
       </div>
 
+      <!-- MASTER TURN INDICATOR BANNER (Ultra Clear Visual Feedback on Who is Speaking) -->
+      <div id="master-turn-banner" class="w-full mb-6 p-4 rounded-3xl transition-all duration-500 shadow-md border glass-card flex flex-col sm:flex-row items-center justify-between gap-3 bg-gradient-to-r from-amber-50/80 via-white/80 to-brand-50/80 border-amber-200/80">
+        <div class="flex items-center space-x-3.5">
+          <div id="turn-icon-box" class="w-12 h-12 rounded-2xl bg-brand-100 text-brand-800 flex items-center justify-center flex-shrink-0 shadow-sm">
+            <span class="text-2xl" id="turn-icon">📞</span>
+          </div>
+          <div>
+            <div id="turn-main-title" class="font-bold text-sm sm:text-base tracking-tight text-crystal-text flex items-center space-x-2">
+              <span>Ready to Dial Vendor</span>
+              <span id="turn-status-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-brand-100 text-brand-800 font-bold uppercase">Standby</span>
+            </div>
+            <div id="turn-sub-text" class="text-xs text-crystal-muted mt-0.5">
+              Click <span class="font-semibold text-brand-800">"TAP TO START"</span> below to initiate the phone call.
+            </div>
+          </div>
+        </div>
+
+        <!-- Animated Waveform Equalizer (Visible when AI is speaking) -->
+        <div id="turn-equalizer" class="hidden items-center space-x-1.5 text-brand-600 bg-brand-100/70 px-4 py-2 rounded-2xl border border-brand-200">
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <span class="text-xs font-bold tracking-wider ml-1 uppercase">AI Speaking</span>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
         
         <!-- LEFT PANEL: DEVICE 1: PHONE HANDSET -->
-        <div class="lg:col-span-5 glass-card rounded-3xl p-6 sm:p-8 flex flex-col items-center text-center space-y-4">
+        <div id="handset-panel" class="lg:col-span-5 glass-card rounded-3xl p-6 sm:p-8 flex flex-col items-center text-center space-y-4 transition-all duration-300">
           
           <div class="w-full text-center">
             <span class="text-[10px] font-bold uppercase tracking-wider text-brand-800 bg-brand-100/70 border border-brand-200/50 px-3 py-1 rounded-full">
@@ -234,9 +286,9 @@
             </label>
           </div>
 
-          <!-- Circular TAP TO START Button (Matching Screenshot) -->
+          <!-- Circular Call / Speak Button -->
           <div class="pt-2">
-            <button id="phone-mic-btn" onclick="toggleDemoCall()" class="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-amber-600 via-brand-600 to-brand-500 text-white flex flex-col items-center justify-center shadow-xl shadow-brand-600/35 transition transform active:scale-95 focus:outline-none pulse-ring">
+            <button id="phone-mic-btn" onclick="handleMainActionClick()" class="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-amber-600 via-brand-600 to-brand-500 text-white flex flex-col items-center justify-center shadow-xl shadow-brand-600/35 transition transform active:scale-95 focus:outline-none pulse-ring">
               <svg id="phone-mic-icon" class="w-9 h-9 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
               <span id="phone-mic-label" class="text-[10px] font-bold uppercase tracking-wider">TAP TO START</span>
             </button>
@@ -254,33 +306,33 @@
             
             <textarea id="vendor-text-input" rows="2" class="w-full bg-white/90 p-3 rounded-xl border border-white/90 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-brand-500 shadow-inner" placeholder="Your speech will appear here automatically...">I cannot go below $1,950 for this block, that is our final corporate rate.</textarea>
             
-            <!-- Preset Quote Pills (Matching Screenshot) -->
+            <!-- Preset Quote Pills -->
             <div class="flex flex-wrap gap-1.5">
               <button onclick="setSample('No, $2,000 is bottom line.')" class="text-[10px] px-3 py-1 rounded-xl bg-white/90 hover:bg-brand-50 border border-crystal-borderSubtle font-medium transition shadow-sm">"No, $2,000 is bottom line"</button>
               <button onclick="setSample('If you pay today, I can do $1,700.')" class="text-[10px] px-3 py-1 rounded-xl bg-white/90 hover:bg-brand-50 border border-crystal-borderSubtle font-medium transition shadow-sm">"If you pay today, $1,700"</button>
               <button onclick="setSample('Alright, we can match $1,500 if you commit to 50 rooms.')" class="text-[10px] px-3 py-1 rounded-xl bg-white/90 hover:bg-brand-50 border border-crystal-borderSubtle font-medium transition shadow-sm">"Match $1,500 with breakfast"</button>
             </div>
 
-            <!-- Deep Terracotta Solid Action Button (Matching Screenshot) -->
+            <!-- Deep Terracotta Solid Action Button -->
             <button onclick="sendVendorTurn()" class="w-full py-3 px-4 rounded-2xl bg-[#832f17] hover:bg-[#722712] text-white font-bold text-xs sm:text-sm shadow-md transition transform active:scale-98 flex items-center justify-center space-x-2">
               <span>Send Spoken Turn (Manual)</span>
               <span class="text-sm">➔</span>
             </button>
           </div>
 
-          <!-- Footer Setting (Matching Screenshot) -->
+          <!-- Footer Setting -->
           <div class="w-full pt-1 flex items-center justify-between text-xs text-crystal-muted">
             <label class="flex items-center space-x-2 cursor-pointer">
               <input id="audio-enable-toggle" type="checkbox" checked class="w-4 h-4 accent-brand-600 rounded">
               <span class="text-[11px] font-medium">Play AI Voice on this device</span>
             </label>
-            <span class="text-[10px] font-semibold text-brand-800">Groq LLM + Edge TTS (Jenny Voice)</span>
+            <span class="text-[10px] font-semibold text-brand-800">Groq Qwen 27B + Jenny Neural TTS</span>
           </div>
 
         </div>
 
         <!-- RIGHT PANEL: DEVICE 2: LIVE CALL TERMINAL -->
-        <div class="lg:col-span-7 glass-card rounded-3xl p-5 sm:p-7 flex flex-col h-[700px]">
+        <div id="terminal-panel" class="lg:col-span-7 glass-card rounded-3xl p-5 sm:p-7 flex flex-col h-[700px] transition-all duration-300">
           
           <div class="flex items-center justify-between pb-3.5 border-b border-brand-200/40">
             <div>
@@ -295,7 +347,7 @@
             </div>
           </div>
 
-          <!-- Live Deal Score Bar (Matching Screenshot) -->
+          <!-- Live Deal Score Bar -->
           <div class="grid grid-cols-3 gap-2 my-3.5 p-3 rounded-2xl glass-inner text-center text-xs">
             <div>
               <div class="text-[10px] text-crystal-muted uppercase font-bold tracking-wider">VENDOR QUOTE</div>
@@ -311,7 +363,7 @@
             </div>
           </div>
 
-          <!-- Scrolling Transcript Feed (Matching Screenshot) -->
+          <!-- Scrolling Transcript Feed -->
           <div id="transcript-feed" class="flex-1 overflow-y-auto space-y-3 p-3.5 rounded-2xl glass-inner">
             <div class="flex flex-col items-start mr-8">
               <div class="flex items-center space-x-2 text-[10px] text-crystal-muted mb-1 font-semibold">
@@ -319,13 +371,13 @@
                 <span>11:42:01</span>
                 <span class="text-[9px] px-2 py-0.5 rounded-full bg-brand-100 text-brand-800 font-bold">Opening Inquiry</span>
               </div>
-              <div class="p-3.5 rounded-2xl rounded-tl-sm bg-brand-50/80 border border-brand-200/70 text-xs text-brand-950 leading-relaxed shadow-sm">
+              <div class="p-3.5 rounded-2xl rounded-tl-sm bg-brand-50/85 border border-brand-200/70 text-xs text-brand-950 leading-relaxed shadow-sm">
                 "Good morning! I am calling to finalize our corporate group reservation for 50 attendees. Could you share your best volume rate for that block?"
               </div>
             </div>
           </div>
 
-          <!-- Human Whisper Bar (Matching Screenshot) -->
+          <!-- Human Whisper Bar -->
           <div class="pt-3 border-t border-brand-200/40 mt-3">
             <label class="block text-[10px] font-bold uppercase tracking-wider text-brand-800 mb-1.5">
               🤫 HUMAN WHISPER BAR (LAPTOP USER CAN INJECT TIPS TO AGENT MID-CALL)
@@ -445,7 +497,7 @@
   </main>
 
   <footer class="max-w-7xl mx-auto px-4 sm:px-6 py-8 border-t border-brand-200/40 text-center text-xs text-crystal-muted">
-    <p>VoiceAgent — The Negotiator • All Spoken in Jenny Female Neural Voice • Powered by Groq Llama 3 &amp; MongoDB</p>
+    <p>VoiceAgent — The Negotiator • All Spoken in Jenny Female Neural Voice • Powered by Groq Qwen 27B &amp; MongoDB</p>
   </footer>
 
   <!-- Audio Player Element (Jenny Female Neural Voice) -->
@@ -524,16 +576,96 @@
       await new Promise(r => setTimeout(r, 1400));
     }
 
-    // 1. WebSocket Real-Time Connection (No intrusive blocking alerts)
+    // ==========================================
+    // DYNAMIC TURN INDICATOR CONTROLLER
+    // ==========================================
+    function setTurnState(state, customMessage) {
+      const banner = document.getElementById('master-turn-banner');
+      const iconBox = document.getElementById('turn-icon-box');
+      const icon = document.getElementById('turn-icon');
+      const mainTitle = document.getElementById('turn-main-title');
+      const statusBadge = document.getElementById('turn-status-badge');
+      const subText = document.getElementById('turn-sub-text');
+      const equalizer = document.getElementById('turn-equalizer');
+      const micBtn = document.getElementById('phone-mic-btn');
+      const micLabel = document.getElementById('phone-mic-label');
+      const sttState = document.getElementById('stt-state');
+
+      if (state === 'AI_SPEAKING') {
+        // AI Speaking State (Indigo / Brand Amber glow with animated equalizer)
+        banner.className = 'w-full mb-6 p-4 rounded-3xl transition-all duration-500 shadow-lg border-2 border-brand-500 bg-gradient-to-r from-brand-50 via-amber-50 to-orange-50 flex flex-col sm:flex-row items-center justify-between gap-3 ring-4 ring-brand-300/30';
+        iconBox.className = 'w-12 h-12 rounded-2xl bg-brand-600 text-white flex items-center justify-center flex-shrink-0 shadow-md animate-pulse';
+        icon.innerText = '🤖';
+        mainTitle.innerHTML = `<span>AI Agent is Speaking (Please Listen)</span>`;
+        statusBadge.className = 'text-[10px] px-2.5 py-0.5 rounded-full bg-brand-600 text-white font-bold uppercase tracking-wider animate-pulse';
+        statusBadge.innerText = 'AI Speaking';
+        subText.innerText = customMessage || 'The Negotiator is speaking in Jenny Neural Voice. Mic will automatically listen once she completes.';
+        equalizer.classList.remove('hidden');
+        equalizer.classList.add('flex');
+        
+        micBtn.className = 'w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-brand-700 to-amber-600 text-white flex flex-col items-center justify-center shadow-md transition opacity-80';
+        micLabel.innerText = 'AI SPEAKING...';
+        sttState.innerText = '⏸️ Listening to AI...';
+        sttState.className = 'text-brand-800 font-bold';
+
+      } else if (state === 'USER_TURN') {
+        // User/Vendor Turn (Emerald Green Pulse - Prominent "YOUR TURN")
+        banner.className = 'w-full mb-6 p-4 rounded-3xl transition-all duration-500 shadow-xl border-2 border-emerald-500 bg-gradient-to-r from-emerald-50 via-teal-50 to-white flex flex-col sm:flex-row items-center justify-between gap-3 ring-4 ring-emerald-300/40';
+        iconBox.className = 'w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-md animate-bounce';
+        icon.innerText = '🎙️';
+        mainTitle.innerHTML = `<span class="text-emerald-950 font-bold text-base">YOUR TURN TO SPEAK (Vendor)</span>`;
+        statusBadge.className = 'text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-600 text-white font-bold uppercase tracking-wider animate-pulse';
+        statusBadge.innerText = 'Speak Now';
+        subText.innerText = 'Speak into your microphone now, or click any sample quote chip below to reply!';
+        equalizer.classList.remove('flex');
+        equalizer.classList.add('hidden');
+
+        micBtn.className = 'w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex flex-col items-center justify-center shadow-xl shadow-emerald-600/40 transition transform active:scale-95 focus:outline-none pulse-ring-green cursor-pointer';
+        micLabel.innerText = '🎙️ YOUR TURN';
+        sttState.innerText = '● Listening to Vendor...';
+        sttState.className = 'text-emerald-700 font-bold animate-pulse';
+
+      } else if (state === 'AI_REASONING') {
+        // AI Reasoning with Groq Qwen
+        banner.className = 'w-full mb-6 p-4 rounded-3xl transition-all duration-500 shadow-md border-2 border-amber-400 bg-gradient-to-r from-amber-50 to-yellow-50 flex flex-col sm:flex-row items-center justify-between gap-3';
+        iconBox.className = 'w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center flex-shrink-0 shadow-md animate-spin';
+        icon.innerText = '⚡';
+        mainTitle.innerHTML = `<span class="text-amber-950">AI Reasoning (Groq Qwen 27B)</span>`;
+        statusBadge.className = 'text-[10px] px-2.5 py-0.5 rounded-full bg-amber-500 text-white font-bold uppercase';
+        statusBadge.innerText = 'Thinking...';
+        subText.innerText = 'Analyzing vendor statement, calculating ZOPA bargaining curve, and formatting counter-offer...';
+        equalizer.classList.remove('flex');
+        equalizer.classList.add('hidden');
+
+        micLabel.innerText = 'REASONING...';
+        sttState.innerText = '⚡ Groq Qwen Reasoning...';
+        sttState.className = 'text-amber-700 font-bold animate-pulse';
+
+      } else {
+        // Standby State
+        banner.className = 'w-full mb-6 p-4 rounded-3xl transition-all duration-500 shadow-md border glass-card flex flex-col sm:flex-row items-center justify-between gap-3 bg-gradient-to-r from-amber-50/80 via-white/80 to-brand-50/80 border-amber-200/80';
+        iconBox.className = 'w-12 h-12 rounded-2xl bg-brand-100 text-brand-800 flex items-center justify-center flex-shrink-0 shadow-sm';
+        icon.innerText = '📞';
+        mainTitle.innerHTML = `<span>Ready to Dial Vendor</span><span id="turn-status-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-brand-100 text-brand-800 font-bold uppercase ml-2">Standby</span>`;
+        subText.innerHTML = `Click <span class="font-semibold text-brand-800">"TAP TO START"</span> below to connect with the merchant.`;
+        equalizer.classList.remove('flex');
+        equalizer.classList.add('hidden');
+
+        micBtn.className = 'w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-amber-600 via-brand-600 to-brand-500 text-white flex flex-col items-center justify-center shadow-xl shadow-brand-600/35 transition transform active:scale-95 focus:outline-none pulse-ring';
+        micLabel.innerText = 'TAP TO START';
+        sttState.innerText = '● Ready';
+        sttState.className = 'text-brand-700 font-bold';
+      }
+    }
+
+    // 1. WebSocket Real-Time Connection
     function connectWebSocket() {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const wsUrl = `${protocol}//${window.location.host}/ws/call`;
       try {
         socket = new WebSocket(wsUrl);
 
-        socket.onopen = () => {
-          console.log("WebSocket connected successfully.");
-        };
+        socket.onopen = () => {};
 
         socket.onmessage = (event) => {
           try {
@@ -547,25 +679,26 @@
         };
 
         socket.onclose = () => {
-          // Reconnect quietly in background without annoying alert popups
           setTimeout(connectWebSocket, 3000);
         };
-
-        socket.onerror = () => {
-          // Fall back quietly
-        };
-      } catch (e) {
-        console.log("WebSocket init note:", e);
-      }
+      } catch (e) {}
     }
     connectWebSocket();
 
-    // 2. TOGGLE DEMO CALL: Start Dialing / End Call & Save to MongoDB
+    // 2. Main Action Handler (Dial or toggle mic)
+    function handleMainActionClick() {
+      if (!isCallActive) {
+        toggleDemoCall();
+      } else {
+        // Toggle mic during call
+        togglePhoneMic();
+      }
+    }
+
+    // 3. TOGGLE DEMO CALL: Start Dialing / End Call & Save to MongoDB
     async function toggleDemoCall() {
       getAudioContext();
 
-      const micBtn = document.getElementById('phone-mic-btn');
-      const micLabel = document.getElementById('phone-mic-label');
       const badge = document.getElementById('call-active-badge');
       const badgeText = document.getElementById('call-active-text');
       const timerDisplay = document.getElementById('call-timer-display');
@@ -582,12 +715,11 @@
         lastOffer = 1950;
         initialOffer = 1950;
 
-        micBtn.classList.remove('from-amber-600', 'via-brand-600', 'to-brand-500');
-        micBtn.classList.add('from-red-600', 'to-red-700');
-        micLabel.innerText = "END CALL";
         badge.className = "inline-flex items-center space-x-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-300";
         badgeText.innerText = `Dialing ${merchantName}...`;
         timerDisplay.classList.remove('hidden');
+
+        setTurnState('AI_REASONING', `Dialing ${merchantName} and generating opening negotiation...`);
 
         transcriptFeed.innerHTML = '';
 
@@ -605,7 +737,7 @@
         badge.className = "inline-flex items-center space-x-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-300";
         badgeText.innerText = `📞 Connected: ${merchantName}`;
 
-        // AI Agent's Opening Greeting in Female Voice (Jenny)
+        // Opening Greeting in Female Voice (Jenny)
         const greetingText = `Hello! I am calling from Procurement regarding your corporate group rate. ${companyStance}. What is your standard quote?`;
         
         appendAgentBubble(greetingText, "Initial Inquiry (Company Stance)");
@@ -623,12 +755,11 @@
 
         playTone(425, 425, 0.3);
 
-        micBtn.classList.remove('from-red-600', 'to-red-700');
-        micBtn.classList.add('from-amber-600', 'via-brand-600', 'to-brand-500');
-        micLabel.innerText = "TAP TO START";
         badge.className = "inline-flex items-center space-x-1.5 text-xs font-semibold px-3 py-1 rounded-full glass-inner text-crystal-muted";
         badgeText.innerText = "Call Completed & Saved";
         timerDisplay.classList.add('hidden');
+
+        setTurnState('STANDBY');
 
         // Save Call Record into MongoDB
         const finalSavings = Math.max(0, initialOffer - lastOffer);
@@ -644,7 +775,7 @@
           evidence_quote: lastEvidenceQuote || `Agreed at $${Number(lastOffer).toFixed(2)}`
         });
 
-        // Summary Note with Link to History
+        // Summary Note
         const notice = document.createElement('div');
         notice.className = 'p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-300 text-xs text-emerald-950 font-medium my-3 space-y-1 shadow-sm';
         notice.innerHTML = `
@@ -666,12 +797,10 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(record)
         });
-      } catch (err) {
-        console.error("Save to MongoDB error:", err);
-      }
+      } catch (err) {}
     }
 
-    // 3. Handle Turn Updates (Dual-Device Sync)
+    // 4. Handle Turn Updates (Dual-Device Sync)
     async function handleTurnUpdate(data) {
       const timeStr = new Date().toLocaleTimeString();
 
@@ -709,6 +838,8 @@
 
       if (document.getElementById('audio-enable-toggle').checked) {
         await playNeuralVoice(data.agent_speech);
+      } else {
+        setTurnState('USER_TURN');
       }
     }
 
@@ -733,6 +864,8 @@
     // Synthesize in high-fidelity Female Neural Voice (en-US-JennyNeural)
     async function playNeuralVoice(text) {
       try {
+        setTurnState('AI_SPEAKING', `The Negotiator is speaking: "${text.substring(0, 75)}..."`);
+
         const res = await fetch('/api/tts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -742,37 +875,35 @@
         speechPlayer.src = URL.createObjectURL(blob);
 
         speechPlayer.onended = () => {
+          // Immediately switch turn to Vendor
+          setTurnState('USER_TURN');
           if (handsFreeToggle.checked && isCallActive) {
             resumeListeningAfterAgent();
           }
         };
 
-        speechPlayer.play().catch(e => console.log("Voice autoplay note:", e));
+        speechPlayer.play().catch(e => {
+          setTurnState('USER_TURN');
+        });
       } catch (err) {
         console.error("TTS error:", err);
+        setTurnState('USER_TURN');
       }
     }
 
     function resumeListeningAfterAgent() {
-      const sttState = document.getElementById('stt-state');
-      sttState.innerText = "● Listening to Vendor...";
-      sttState.className = "text-amber-700 font-bold animate-pulse";
       if (!isListening && recognition) {
         try { recognition.start(); } catch (e) {}
       }
     }
 
-    // 4. Microphone STT & Silence Detection
+    // 5. Microphone STT & Silence Detection
     function togglePhoneMic() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
-        // Fallback gracefully without blocking alert
-        const sttState = document.getElementById('stt-state');
-        sttState.innerText = "Use Preset Quotes or Type Below";
         return;
       }
 
-      const sttState = document.getElementById('stt-state');
       const textInput = document.getElementById('vendor-text-input');
 
       if (!recognition) {
@@ -783,8 +914,7 @@
 
         recognition.onstart = () => {
           isListening = true;
-          sttState.innerText = "● Listening...";
-          sttState.className = "text-emerald-700 font-bold";
+          setTurnState('USER_TURN');
         };
 
         recognition.onresult = (e) => {
@@ -809,14 +939,10 @@
 
         recognition.onerror = () => {
           isListening = false;
-          sttState.innerText = "● Standby";
-          sttState.className = "text-crystal-muted font-bold";
         };
 
         recognition.onend = () => {
           isListening = false;
-          sttState.innerText = "● Standby";
-          sttState.className = "text-crystal-muted font-bold";
         };
       }
 
@@ -827,7 +953,7 @@
       }
     }
 
-    // 5. Send Vendor Turn (Groq Llama 3 with EACL Fallback)
+    // 6. Send Vendor Turn (Powered by Groq Qwen 27B)
     function sendVendorTurn() {
       const text = document.getElementById('vendor-text-input').value;
       if (!text.trim()) return;
@@ -835,9 +961,7 @@
       const merchantName = document.getElementById('merchant-name-input').value.trim() || "Apex Grand Hotel & Suites";
       const companyStance = document.getElementById('company-stance-input').value.trim() || "Strict budget enforcement";
 
-      const sttState = document.getElementById('stt-state');
-      sttState.innerText = "AI Reasoning (Groq)...";
-      sttState.className = "text-brand-800 font-bold animate-pulse";
+      setTurnState('AI_REASONING');
 
       if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify({
@@ -882,7 +1006,7 @@
         })
         .catch(err => {
           console.error("REST roleplay error:", err);
-          sttState.innerText = "● Ready";
+          setTurnState('USER_TURN');
         });
       }
     }
@@ -894,7 +1018,7 @@
       }
     }
 
-    // 6. Whisper Tip Injection
+    // 7. Whisper Tip Injection
     function sendWhisper() {
       const input = document.getElementById('whisper-input');
       const whisper = input.value.trim();
@@ -920,7 +1044,7 @@
       transcriptFeed.scrollTop = transcriptFeed.scrollHeight;
     }
 
-    // 7. 3-Vendor War Room Simulation
+    // 8. 3-Vendor War Room Simulation
     async function launchWarRoom() {
       const target_budget = 1500;
       const container = document.getElementById('war-room-cards');
@@ -979,7 +1103,7 @@
       }
     }
 
-    // 8. Evidence Records
+    // 9. Evidence Records
     async function loadEvidenceRecords() {
       const tbody = document.getElementById('evidence-tbody');
       try {
@@ -1040,6 +1164,7 @@
     }
 
     // Initialize
+    setTurnState('STANDBY');
     loadEvidenceRecords();
     launchWarRoom();
   </script>

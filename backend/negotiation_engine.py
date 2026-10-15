@@ -121,32 +121,43 @@ Return ONLY a valid JSON object with EXACTLY this structure:
   "status": "counter_offered" or "deal_closed"
 }}"""
 
-        # Determine best available model for this Groq key
-        target_model = "llama-3.3-70b-versatile"
+        # Primary model requested: qwen/qwen3.8-27b on Groq
+        target_model = "qwen/qwen3.8-27b"
         try:
             available_models = [m.id for m in client.models.list().data]
-            for candidate in ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "llama3-70b-8192", "llama3-8b-8192"]:
-                if candidate in available_models:
-                    target_model = candidate
-                    break
+            if "qwen/qwen3.8-27b" not in available_models:
+                # Fallback candidates
+                for candidate in ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-20b"]:
+                    if candidate in available_models:
+                        target_model = candidate
+                        break
         except Exception:
             pass
 
-        response = client.chat.completions.create(
+        completion = client.chat.completions.create(
             model=target_model,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Vendor just said: \"{user_text}\""}
             ],
-            response_format={"type": "json_object"},
-            temperature=0.35,
-            max_tokens=300
+            temperature=0.6,
+            max_completion_tokens=2048,
+            top_p=0.95
         )
 
-        content = response.choices[0].message.content
-        data = json.loads(content)
+        content = completion.choices[0].message.content or ""
+        
+        # Robust JSON extraction (handles both raw JSON and markdown ```json blocks from Qwen)
+        json_match = re.search(r"\{[\s\S]*\}", content)
+        if json_match:
+            data = json.loads(json_match.group(0))
+        else:
+            data = json.loads(content)
+
         data["round"] = round_num + 1
         data["batna_price"] = effective_batna
+        if "agent_speech" not in data or not data["agent_speech"]:
+            data["agent_speech"] = f"Our company stance is firm at ${current_target:,.2f}. Could you meet us there?"
         return data
 
     @classmethod
