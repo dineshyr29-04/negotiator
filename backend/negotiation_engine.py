@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Optional Groq client initialization
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "").strip()
 groq_client = None
 if GROQ_API_KEY:
@@ -19,7 +18,7 @@ if GROQ_API_KEY:
 class NegotiationEngine:
     """
     Implements dialogue strategy informed by EACL 2024 Survey ('Let's Negotiate!')
-    Powered by Groq Llama 3 (sub-300ms) with seamless rule-based fallback.
+    Powered by Groq Llama 3 (sub-300ms) with Company Stance Enforcement.
     """
 
     @staticmethod
@@ -41,13 +40,13 @@ class NegotiationEngine:
         last_offer: float,
         round_num: int,
         batna_price: float = 0.0,
-        whisper_instruction: str = ""
+        whisper_instruction: str = "",
+        company_stance: str = "Our company policy requires strict budget compliance and bundled value"
     ) -> Dict[str, Any]:
         """
         Evaluates vendor response and determines agent's spoken counter-speech.
-        Uses Groq LLM if GROQ_API_KEY is available, otherwise uses EACL rule engine.
+        Enforces company stance and prevents premature agreement on early rounds.
         """
-        # If Groq client is active, use high-speed LLM reasoning
         if groq_client:
             try:
                 return cls._evaluate_with_groq(
@@ -56,19 +55,20 @@ class NegotiationEngine:
                     last_offer=last_offer,
                     round_num=round_num,
                     batna_price=batna_price,
-                    whisper_instruction=whisper_instruction
+                    whisper_instruction=whisper_instruction,
+                    company_stance=company_stance
                 )
             except Exception as e:
-                print(f"Groq API call failed or timed out: {e}. Falling back to EACL rule engine.")
+                print(f"Groq API call failed: {e}. Falling back to EACL rule engine.")
 
-        # Fallback to EACL 2024 Rule Engine
         return cls._evaluate_rule_based(
             user_text=user_text,
             current_target=current_target,
             last_offer=last_offer,
             round_num=round_num,
             batna_price=batna_price,
-            whisper_instruction=whisper_instruction
+            whisper_instruction=whisper_instruction,
+            company_stance=company_stance
         )
 
     @classmethod
@@ -79,32 +79,38 @@ class NegotiationEngine:
         last_offer: float,
         round_num: int,
         batna_price: float,
-        whisper_instruction: str
+        whisper_instruction: str,
+        company_stance: str
     ) -> Dict[str, Any]:
         effective_batna = batna_price if batna_price > 0 else round(current_target * 1.15, 2)
         
         system_prompt = f"""You are 'The Negotiator', an expert procurement voice AI agent negotiating live over the phone with a business vendor.
 You speak naturally, confidently, with short conversational phone cadence (1 to 2 sentences maximum! No bullet points, no robotic speech).
 
+Company Procurement Mandate & Stance:
+"{company_stance}"
+
 Negotiation Parameters:
-- Client Target Budget: ${current_target:,.2f}
+- Client Target Budget Cap: ${current_target:,.2f}
 - Alternative Competitor Quote (BATNA): ${effective_batna:,.2f}
-- Current Round: {round_num}
+- Current Negotiation Round: {round_num}
 - Human Co-Pilot Whisper Instruction: "{whisper_instruction}"
 
-Rules from EACL 2024 ('Let's Negotiate!'):
-1. If human whisper instruction is given, you MUST incorporate it into your reply.
-2. If vendor price <= ${current_target:,.2f}, close the deal enthusiastically.
-3. If vendor resists or rejects, cite your BATNA (${effective_batna:,.2f}) as polite leverage and offer package incentives (immediate payment, recurring renewal).
-4. Do not concede in big leaps; concede incrementally.
+CRITICAL NEGOTIATION RULES (DO NOT ACCEPT EASILY):
+1. State and enforce the Company Stance clearly to the vendor!
+2. In Round 1 or 2, DO NOT accept immediately even if the price looks reasonable! Always probe for added value, free delivery, payment terms, or a further discount before agreeing.
+3. If vendor offers above target, explain why the company stance forbids it and apply BATNA leverage (${effective_batna:,.2f}) or upfront ACH settlement as trade-offs.
+4. Only close and agree ('deal_closed') if Round >= 2 AND the vendor has conceded to or below the target cap (${current_target:,.2f}) or matched all company perks.
+5. If human whisper instruction is given, you MUST incorporate it directly into your speech.
 
 Return ONLY a valid JSON object with EXACTLY this structure:
 {{
-  "agent_speech": "What you speak aloud to the vendor (1-2 sentences)",
+  "agent_speech": "What you speak aloud to the vendor (1-2 sentences clearly stating your stance and counter)",
   "counter_price": 1650.0,
   "detected_price": 1950.0,
-  "dialogue_act": "BATNA Leverage / Concession Curve / Agreement",
-  "sentiment": "Vendor Yielding / Agreement Secured / Firm Resistance",
+  "company_stance_summary": "Brief 1-sentence interpretation of how company stance was applied",
+  "dialogue_act": "Stance Assertion / BATNA Leverage / Package Bargaining / Concession Curve / Agreement",
+  "sentiment": "Enforcing Company Stance / Vendor Yielding / Agreement Secured",
   "status": "counter_offered" or "deal_closed"
 }}"""
 
@@ -115,7 +121,7 @@ Return ONLY a valid JSON object with EXACTLY this structure:
                 {"role": "user", "content": f"Vendor just said: \"{user_text}\""}
             ],
             response_format={"type": "json_object"},
-            temperature=0.4,
+            temperature=0.35,
             max_tokens=300
         )
 
@@ -133,7 +139,8 @@ Return ONLY a valid JSON object with EXACTLY this structure:
         last_offer: float,
         round_num: int,
         batna_price: float,
-        whisper_instruction: str
+        whisper_instruction: str,
+        company_stance: str
     ) -> Dict[str, Any]:
         detected_price = cls.extract_price(user_text) or last_offer
         lower_text = user_text.lower()
@@ -148,40 +155,50 @@ Return ONLY a valid JSON object with EXACTLY this structure:
 
         zopa_spread = detected_price - current_target
 
-        if detected_price <= current_target:
+        # In round 1, do not immediately accept — enforce stance and demand perks
+        if round_num == 1:
+            counter = round(current_target * 0.95, 2)
+            agent_speech = (
+                f"{whisper_prefix}Our company stance is strict: our procurement cap is ${current_target:,.2f} and we require guaranteed terms. "
+                f"We cannot proceed at ${detected_price:,.2f}. Could you come down to ${counter:,.2f} if we pay the full deposit today?"
+            )
+            dialogue_act = "Stance Assertion & Initial Anchor"
+            status = "counter_offered"
+            sentiment = "Enforcing Company Stance"
+        elif detected_price <= current_target and round_num >= 2:
             dialogue_act = "Agreement & Package Closure"
             agent_speech = (
-                f"{whisper_prefix}That is acceptable. At ${detected_price:,.2f}, we have an agreement. "
-                "Please send over the contract and our procurement team will approve the deposit today."
+                f"{whisper_prefix}That meets our company stance. At ${detected_price:,.2f}, we are prepared to finalize. "
+                "Please send the written agreement and our accounts team will release the payment today."
             )
             status = "deal_closed"
             counter = detected_price
             sentiment = "Agreement Secured"
         elif is_concession or (detected_price < last_offer):
-            dialogue_act = "Calculated Concession (Tit-for-Tat)"
+            dialogue_act = "Calculated Concession & Package Trade"
             concession_step = round(zopa_spread * 0.35, 2)
             counter = round(current_target + concession_step, 2)
             agent_speech = (
-                f"{whisper_prefix}We appreciate the movement to ${detected_price:,.2f}. "
-                f"If you can bridge the difference at ${counter:,.2f} and include complimentary standard handling, we will sign off immediately."
+                f"{whisper_prefix}We appreciate the movement down to ${detected_price:,.2f}, but our policy strictly limits us to ${current_target:,.2f}. "
+                f"If you can meet us at ${counter:,.2f} with complimentary delivery, we can sign off immediately."
             )
             status = "counter_offered"
             sentiment = "Vendor Yielding"
         elif is_rejection:
-            dialogue_act = "BATNA Leverage & Value Trade"
-            counter = round(current_target * 1.06, 2)
+            dialogue_act = "BATNA Leverage & Policy Defense"
+            counter = round(current_target * 1.05, 2)
             agent_speech = (
-                f"{whisper_prefix}I understand your position. However, our alternative option (BATNA) is currently quoted at ${effective_batna:,.2f}. "
-                f"We prefer working with you—if we guarantee immediate ACH settlement, can you meet at ${counter:,.2f}?"
+                f"{whisper_prefix}I understand, but our corporate policy cannot approve ${detected_price:,.2f} when our alternative quote (BATNA) is ${effective_batna:,.2f}. "
+                f"If we commit to an upfront ACH transfer, could we bridge the gap at ${counter:,.2f}?"
             )
             status = "leverage_applied"
             sentiment = "Overcoming Resistance"
         else:
-            dialogue_act = "Exploratory Counter & Package Bargain"
-            counter = round(current_target + (zopa_spread * 0.45), 2)
+            dialogue_act = "Exploratory Counter"
+            counter = round(current_target + (zopa_spread * 0.4), 2)
             agent_speech = (
-                f"{whisper_prefix}Thank you for clarifying. At ${detected_price:,.2f}, that sits just outside our budget ceiling. "
-                f"Can we meet in the middle at ${counter:,.2f} for an immediate order?"
+                f"{whisper_prefix}Our company stance requires all vendors to stay within our ${current_target:,.2f} benchmark. "
+                f"Can we meet at ${counter:,.2f} to get this contract executed today?"
             )
             status = "counter_offered"
             sentiment = "Constructive Bargaining"
@@ -190,6 +207,7 @@ Return ONLY a valid JSON object with EXACTLY this structure:
             "agent_speech": agent_speech,
             "counter_price": counter,
             "detected_price": detected_price,
+            "company_stance_summary": f"Enforced {company_stance}",
             "status": status,
             "sentiment": sentiment,
             "dialogue_act": dialogue_act,
@@ -207,7 +225,7 @@ Return ONLY a valid JSON object with EXACTLY this structure:
                 "final_price": round(target * 1.02, 2),
                 "rounds": [
                     {"speaker": "Vendor", "text": f"Our corporate base quote is ${round(target * 1.35):,}."},
-                    {"speaker": "Agent", "text": f"We are working with a strict budget of ${round(target):,}. What volume concession can you offer?"},
+                    {"speaker": "Agent", "text": f"Our company policy caps this at ${round(target):,}. What volume concession can you authorize?"},
                     {"speaker": "Vendor", "text": f"With a 24-hour signature, I can authorize ${round(target * 1.02):,}."}
                 ],
                 "perks": "Free expedited tracking & insured transit",
@@ -222,7 +240,7 @@ Return ONLY a valid JSON object with EXACTLY this structure:
                 "final_price": round(target * 0.98, 2),
                 "rounds": [
                     {"speaker": "Vendor", "text": f"Normally we quote ${round(target * 1.45):,} for this specification."},
-                    {"speaker": "Agent", "text": f"Apex offered us near ${round(target * 1.02):,}. If you beat that under ${round(target):,}, the contract is yours today."},
+                    {"speaker": "Agent", "text": f"Our mandate requires beating Apex's quote of ${round(target * 1.02):,}. Match under ${round(target):,} and you have the deal."},
                     {"speaker": "Vendor", "text": f"Understood. We will match and beat at ${round(target * 0.98):,} flat, and bundle the priority package."}
                 ],
                 "perks": "Priority tier upgrade + zero cancellation fee",
@@ -238,7 +256,7 @@ Return ONLY a valid JSON object with EXACTLY this structure:
                 "final_price": round(target * 1.15, 2),
                 "rounds": [
                     {"speaker": "Vendor", "text": f"Our rate is fixed at ${round(target * 1.25):,}."},
-                    {"speaker": "Agent", "text": f"Can you match ${round(target):,} for immediate purchase order execution?"},
+                    {"speaker": "Agent", "text": f"Our company stance cannot approve that without matching competitor rates."},
                     {"speaker": "Vendor", "text": f"Bottom line is ${round(target * 1.15):,}, we cannot go lower."}
                 ],
                 "perks": "Standard warranty only",

@@ -73,8 +73,11 @@
         </div>
       </div>
 
-      <!-- Live Call Status Pill -->
-      <div class="flex items-center space-x-2">
+      <!-- Action Links & Live Call Status Pill -->
+      <div class="flex items-center space-x-3">
+        <a href="/history" class="text-xs font-semibold px-3 py-1.5 rounded-full bg-warm-subtle hover:bg-brand-100 border border-warm-border text-warm-text transition flex items-center space-x-1.5">
+          <span>📂 Merchant Vault (MongoDB)</span>
+        </a>
         <span id="call-active-badge" class="inline-flex items-center space-x-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
           <span class="w-2 h-2 rounded-full bg-gray-400"></span>
           <span id="call-active-text">Call Standby</span>
@@ -87,61 +90,74 @@
   <main class="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-8 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
     
     <!-- LEFT SIDE: The Voice Handset & Call Controls -->
-    <div class="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 border border-warm-border shadow-sm flex flex-col items-center text-center space-y-5">
+    <div class="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 border border-warm-border shadow-sm flex flex-col items-center text-center space-y-4">
       
       <div>
         <span class="text-[11px] font-bold uppercase tracking-wider text-brand-700 bg-brand-100 px-3 py-1 rounded-full">Pitch Demo Controller</span>
         <h2 class="font-serif text-2xl sm:text-3xl text-warm-text mt-2 font-bold">Start Live Outbound Call</h2>
-        <p class="text-xs text-warm-muted mt-1 max-w-sm">Press the green button to simulate a phone dial with audio ringtones, autonomous AI greeting, and continuous conversation.</p>
+        <p class="text-xs text-warm-muted mt-0.5 max-w-sm">Dials merchant, enforces company policy, uses Groq Llama 3, and saves history into MongoDB.</p>
+      </div>
+
+      <!-- Merchant Name & Company Stance Inputs (Required Before Dialing) -->
+      <div class="w-full text-left space-y-2.5 p-3.5 rounded-2xl bg-warm-bg/70 border border-warm-border">
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider text-warm-muted mb-1">🏢 Target Merchant / Business Name</label>
+          <input id="merchant-name-input" type="text" class="w-full p-2.5 rounded-xl border border-warm-border text-xs font-bold bg-white focus:outline-none" value="Apex Grand Hotel & Suites" placeholder="e.g. Apex Logistics, Staples, Grand Hyatt">
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider text-warm-muted mb-1">🛡️ Company Policy / Procurement Stance</label>
+          <input id="company-stance-input" type="text" class="w-full p-2.5 rounded-xl border border-warm-border text-xs font-medium bg-white focus:outline-none" value="Our company policy limits conference accommodations to $1,500 and requires breakfast vouchers with zero deposit penalty." placeholder="State what the company mandates...">
+        </div>
       </div>
 
       <!-- MAIN ACTION BUTTON: DIAL / END CALL -->
-      <div class="w-full space-y-3">
-        <button id="main-call-btn" onclick="toggleDemoCall()" class="w-full py-4 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-xl shadow-emerald-600/30 transition transform active:scale-95 flex items-center justify-center space-x-2.5">
+      <div class="w-full space-y-2.5">
+        <button id="main-call-btn" onclick="toggleDemoCall()" class="w-full py-3.5 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-xl shadow-emerald-600/30 transition transform active:scale-95 flex items-center justify-center space-x-2.5">
           <svg id="call-btn-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
           <span id="call-btn-text">📞 Start Live Call (Dial Vendor)</span>
         </button>
 
-        <div id="call-timer-display" class="hidden text-xs font-mono font-bold text-emerald-700 bg-emerald-50 py-1.5 px-3 rounded-xl border border-emerald-200">
+        <div id="call-timer-display" class="hidden text-xs font-mono font-bold text-emerald-700 bg-emerald-50 py-1 px-3 rounded-xl border border-emerald-200">
           In Call: <span id="call-timer">00:00</span> • Live Neural Audio
         </div>
       </div>
 
       <!-- Hands-Free Toggle -->
-      <div class="w-full p-3 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-center justify-between text-left">
+      <div class="w-full p-2.5 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-center justify-between text-left">
         <div>
-          <div class="text-xs font-bold text-amber-900 flex items-center space-x-1.5">
+          <div class="text-[11px] font-bold text-amber-900 flex items-center space-x-1">
             <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
             <span>Hands-Free Auto-Call Mode</span>
           </div>
-          <div class="text-[10px] text-amber-800">Auto-detects silence ➔ Replies automatically without touching screen!</div>
+          <div class="text-[9px] text-amber-800">Auto-detects silence ➔ Replies automatically without touching screen!</div>
         </div>
         <label class="relative inline-flex items-center cursor-pointer ml-2">
           <input id="hands-free-toggle" type="checkbox" checked class="sr-only peer">
-          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+          <div class="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-600"></div>
         </label>
       </div>
 
       <!-- Tactile Vendor Microphone -->
-      <div class="py-2">
-        <button id="phone-mic-btn" onclick="togglePhoneMic()" class="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-brand-600 to-amber-500 text-white flex flex-col items-center justify-center shadow-xl shadow-brand-500/30 transition transform active:scale-95 focus:outline-none pulse-ring">
-          <svg id="phone-mic-icon" class="w-10 h-10 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
-          <span id="phone-mic-label" class="text-[11px] font-bold uppercase tracking-wider">Vendor Mic</span>
+      <div>
+        <button id="phone-mic-btn" onclick="togglePhoneMic()" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-brand-600 to-amber-500 text-white flex flex-col items-center justify-center shadow-lg shadow-brand-500/30 transition transform active:scale-95 focus:outline-none pulse-ring">
+          <svg id="phone-mic-icon" class="w-8 h-8 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+          <span id="phone-mic-label" class="text-[10px] font-bold uppercase tracking-wider">Vendor Mic</span>
         </button>
       </div>
 
       <!-- Spoken Text Preview -->
-      <div class="w-full bg-warm-bg/70 rounded-2xl p-4 border border-warm-border text-left">
+      <div class="w-full bg-warm-bg/70 rounded-2xl p-3.5 border border-warm-border text-left">
         <div class="flex items-center justify-between text-[11px] font-bold text-warm-muted uppercase mb-1">
           <span>What you speak as Vendor:</span>
           <span id="stt-state" class="text-emerald-700 font-bold">● Ready</span>
         </div>
-        <textarea id="vendor-text-input" rows="2" class="w-full bg-white p-2.5 rounded-xl border border-warm-border text-xs sm:text-sm font-medium focus:outline-none" placeholder="Your speech will appear here automatically...">I cannot go below $1,950 for this block, that is our final corporate rate.</textarea>
+        <textarea id="vendor-text-input" rows="2" class="w-full bg-white p-2 rounded-xl border border-warm-border text-xs font-medium focus:outline-none" placeholder="Your speech will appear here automatically...">I cannot go below $1,950 for this block, that is our final corporate rate.</textarea>
         
         <!-- Preset Quotes for Instant Demo -->
         <div class="flex flex-wrap gap-1.5 mt-2">
           <button onclick="setSample('No way, $2,000 is our bottom line.')" class="text-[10px] px-2.5 py-1 rounded-lg bg-white border border-warm-border hover:bg-brand-50 font-medium">"No, $2,000 is bottom line"</button>
-          <button onclick="setSample('If you pay today, I can do $1,700.')" class="text-[10px] px-2.5 py-1 rounded-lg bg-white border border-warm-border hover:bg-brand-50 font-medium">"If you pay today, $1,700"</button>
+          <button onclick="setSample('If you pay today, I can do $1,680.')" class="text-[10px] px-2.5 py-1 rounded-lg bg-white border border-warm-border hover:bg-brand-50 font-medium">"If you pay today, $1,680"</button>
         </div>
       </div>
 
@@ -151,13 +167,13 @@
           <input id="audio-enable-toggle" type="checkbox" checked class="w-4 h-4 accent-brand-600 rounded">
           <span>Play AI Voice on this device</span>
         </label>
-        <span class="text-[10px] font-semibold text-brand-700">Llama 3 + Edge TTS</span>
+        <span class="text-[10px] font-semibold text-brand-700">Groq LLM + MongoDB</span>
       </div>
 
     </div>
 
     <!-- RIGHT SIDE: Real-Time Scrolling Transcription Feed -->
-    <div class="lg:col-span-7 bg-white rounded-3xl p-5 sm:p-7 border border-warm-border shadow-sm flex flex-col h-[650px]">
+    <div class="lg:col-span-7 bg-white rounded-3xl p-5 sm:p-7 border border-warm-border shadow-sm flex flex-col h-[700px]">
       
       <div class="flex items-center justify-between pb-3.5 border-b border-warm-border">
         <div>
@@ -188,7 +204,7 @@
 
       <!-- Scrolling Transcript Feed -->
       <div id="transcript-feed" class="flex-1 overflow-y-auto space-y-3 p-3 rounded-2xl bg-warm-bg/40 border border-warm-border/60">
-        <div class="text-center py-12 text-warm-muted text-xs">
+        <div class="text-center py-16 text-warm-muted text-xs">
           Click <span class="font-bold text-emerald-700">"Start Live Call"</span> to begin dialing and hear the autonomous negotiation!
         </div>
       </div>
@@ -222,10 +238,13 @@
     let callSeconds = 0;
     let roundCount = 1;
     let lastOffer = 1950;
+    let initialOffer = 1950;
     let targetPrice = 1500;
     let batnaPrice = 1680;
     let activeWhisper = "";
     let silenceTimer = null;
+    let currentDialogueHistory = [];
+    let lastEvidenceQuote = "";
 
     const speechPlayer = document.getElementById('global-speech-player');
     const transcriptFeed = document.getElementById('transcript-feed');
@@ -265,7 +284,6 @@
     }
 
     async function playRingbackSequence() {
-      // Dial tones (DTMF beeps)
       playTone(697, 1209, 0.12);
       await new Promise(r => setTimeout(r, 150));
       playTone(770, 1336, 0.12);
@@ -273,7 +291,6 @@
       playTone(852, 1477, 0.12);
       await new Promise(r => setTimeout(r, 300));
       
-      // Standard US Ringback: 440Hz + 480Hz
       playTone(440, 480, 1.6);
       await new Promise(r => setTimeout(r, 1800));
     }
@@ -301,28 +318,30 @@
     }
     connectWebSocket();
 
-    // 2. TOGGLE DEMO CALL: Start Dialing / End Call
+    // 2. TOGGLE DEMO CALL: Start Dialing / End Call & Save to MongoDB
     async function toggleDemoCall() {
       const mainBtn = document.getElementById('main-call-btn');
       const btnText = document.getElementById('call-btn-text');
       const badge = document.getElementById('call-active-badge');
       const badgeText = document.getElementById('call-active-text');
       const timerDisplay = document.getElementById('call-timer-display');
+      const merchantName = document.getElementById('merchant-name-input').value.trim() || "Apex Grand Hotel & Suites";
+      const companyStance = document.getElementById('company-stance-input').value.trim() || "Strict budget compliance";
 
       if (!isCallActive) {
         // START CALL
         isCallActive = true;
+        currentDialogueHistory = [];
+        roundCount = 1;
         mainBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
         mainBtn.classList.add('bg-red-600', 'hover:bg-red-700');
-        btnText.innerText = "🛑 End Call (Hang Up)";
+        btnText.innerText = "🛑 End Call & Save to MongoDB";
         badge.className = "inline-flex items-center space-x-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-300";
-        badgeText.innerText = "Dialing +1 (555) 392-1044...";
+        badgeText.innerText = `Dialing ${merchantName}...`;
         timerDisplay.classList.remove('hidden');
 
-        // Clear placeholder in feed
         transcriptFeed.innerHTML = '';
 
-        // Start call timer
         callSeconds = 0;
         clearInterval(callTimerInterval);
         callTimerInterval = setInterval(() => {
@@ -332,21 +351,20 @@
           document.getElementById('call-timer').innerText = `${mins}:${secs}`;
         }, 1000);
 
-        // Play realistic ring sequence
         await playRingbackSequence();
 
-        // Connected!
         badge.className = "inline-flex items-center space-x-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-300";
-        badgeText.innerText = "📞 Connected: In Live Call";
+        badgeText.innerText = `📞 Connected: ${merchantName}`;
 
-        // AI Agent's Opening Greeting
-        const greetingText = "Hello! I am calling from Procurement regarding your corporate booking rate for 50 attendees. What is your standard quote for that block?";
+        // AI Agent's Opening Greeting enforcing company stance
+        const greetingText = `Hello! I am calling on behalf of Corporate Procurement regarding your block rate for 50 attendees. ${companyStance}. What is your best quote?`;
         
-        appendAgentBubble(greetingText, "Initial Inquiry (Opening)");
+        appendAgentBubble(greetingText, "Initial Inquiry (Company Stance)");
+        currentDialogueHistory.push({ speaker: "Agent", text: greetingText, timestamp: new Date().toLocaleTimeString() });
         await playNeuralVoice(greetingText);
 
       } else {
-        // END CALL
+        // END CALL & SAVE TO MONGODB
         isCallActive = false;
         clearInterval(callTimerInterval);
         speechPlayer.pause();
@@ -354,22 +372,51 @@
           try { recognition.stop(); } catch(e) {}
         }
 
-        // Play disconnect tone
         playTone(425, 425, 0.4);
 
         mainBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
         mainBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
         btnText.innerText = "📞 Start Live Call (Dial Vendor)";
         badge.className = "inline-flex items-center space-x-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200";
-        badgeText.innerText = "Call Completed";
+        badgeText.innerText = "Call Completed & Saved";
         timerDisplay.classList.add('hidden');
 
-        // Call Summary Note
+        // Save Call Record into MongoDB
+        const finalSavings = Math.max(0, initialOffer - lastOffer);
+        await saveCallRecordToMongo({
+          merchant_name: merchantName,
+          company_stance: companyStance,
+          target_price: targetPrice,
+          initial_offer: initialOffer,
+          final_price: lastOffer,
+          savings: finalSavings,
+          status: lastOffer <= targetPrice ? "Deal Secured" : "Negotiation Archived",
+          dialogue_history: currentDialogueHistory,
+          evidence_quote: lastEvidenceQuote || `Agreed at $${lastOffer:,.2f}`
+        });
+
+        // Call Summary Note with Link to History
         const notice = document.createElement('div');
-        notice.className = 'p-3 rounded-2xl bg-emerald-50 border border-emerald-300 text-xs text-emerald-900 text-center font-bold my-3';
-        notice.innerText = `✅ Call Ended: Final Price Locked at $${lastOffer.toLocaleString()} — Audit Proof Saved!`;
+        notice.className = 'p-3.5 rounded-2xl bg-emerald-50 border border-emerald-300 text-xs text-emerald-950 font-medium my-3 space-y-1';
+        notice.innerHTML = `
+          <div class="font-bold text-emerald-900">✅ Saved to MongoDB under "${merchantName}"!</div>
+          <div>Final Price: <span class="font-bold text-brand-700">$${lastOffer.toLocaleString()}</span> (Saved $${finalSavings.toLocaleString()})</div>
+          <div class="pt-1"><a href="/history" class="underline font-bold text-brand-800 hover:text-brand-900">👉 View Full Record in Merchant Vault (/history)</a></div>
+        `;
         transcriptFeed.appendChild(notice);
         transcriptFeed.scrollTop = transcriptFeed.scrollHeight;
+      }
+    }
+
+    async function saveCallRecordToMongo(record) {
+      try {
+        await fetch('/api/records/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(record)
+        });
+      } catch (err) {
+        console.error("Save to MongoDB error:", err);
       }
     }
 
@@ -390,8 +437,11 @@
         </div>
       `;
       transcriptFeed.appendChild(vendorDiv);
+      currentDialogueHistory.push({ speaker: "Vendor", text: data.vendor_speech, timestamp: timeStr });
 
       appendAgentBubble(data.agent_speech, data.dialogue_act);
+      currentDialogueHistory.push({ speaker: "Agent", text: data.agent_speech, timestamp: timeStr });
+      lastEvidenceQuote = data.agent_speech;
 
       // Update telemetry
       document.getElementById('stat-vendor-quote').innerText = `$${data.detected_price.toLocaleString()}`;
@@ -525,18 +575,23 @@
       }
     }
 
-    // 5. Send Vendor Turn
+    // 5. Send Vendor Turn (with Groq and Stance support)
     function sendVendorTurn() {
       const text = document.getElementById('vendor-text-input').value;
       if (!text.trim()) return;
 
+      const merchantName = document.getElementById('merchant-name-input').value.trim() || "Apex Grand Hotel & Suites";
+      const companyStance = document.getElementById('company-stance-input').value.trim() || "Strict budget enforcement";
+
       const sttState = document.getElementById('stt-state');
-      sttState.innerText = "AI Reasoning...";
+      sttState.innerText = "AI Reasoning (Groq)...";
       sttState.className = "text-brand-700 font-bold animate-pulse";
 
       if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify({
           type: 'vendor_speech',
+          merchant_name: merchantName,
+          company_stance: companyStance,
           text,
           target_price: targetPrice,
           last_offer: lastOffer,
@@ -546,7 +601,7 @@
         }));
         activeWhisper = "";
       } else {
-        // Fallback gracefully via HTTP REST without alerting
+        // Fallback via HTTP REST
         fetch('/api/roleplay', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -556,6 +611,7 @@
             last_offer: lastOffer,
             batna_price: batnaPrice,
             whisper_instruction: activeWhisper,
+            company_stance: companyStance,
             round: roundCount
           })
         })
@@ -572,9 +628,7 @@
           });
           activeWhisper = "";
         })
-        .catch(err => {
-          console.error("Fallback error:", err);
-        });
+        .catch(err => console.error(err));
       }
     }
 

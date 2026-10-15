@@ -1,5 +1,5 @@
 import os
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -9,8 +9,9 @@ from pydantic import BaseModel
 from voice_service import VoiceService
 from negotiation_engine import NegotiationEngine
 from scout_service import ScoutService
+from database import HistoryDatabase
 
-app = FastAPI(title="The Negotiator Backend Engine", version="1.0.0")
+app = FastAPI(title="The Negotiator Backend Engine", version="1.1.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -35,6 +36,7 @@ class RoleplayRequest(BaseModel):
     round: Optional[int] = 1
     batna_price: Optional[float] = 0.0
     whisper_instruction: Optional[str] = ""
+    company_stance: Optional[str] = "Our company policy limits this category to our target budget with guaranteed terms"
 
 class WarRoomRequest(BaseModel):
     category: str
@@ -43,6 +45,17 @@ class WarRoomRequest(BaseModel):
 class ScoutRequest(BaseModel):
     query: str
     target_budget: float
+
+class RecordSaveRequest(BaseModel):
+    merchant_name: str
+    company_stance: Optional[str] = "Strict budget enforcement"
+    target_price: float
+    initial_offer: float
+    final_price: float
+    savings: float
+    status: Optional[str] = "Deal Secured"
+    dialogue_history: List[Dict[str, Any]]
+    evidence_quote: Optional[str] = ""
 
 # WebSocket Connection Manager for Multi-Device Sync (Phone <-> Laptop)
 active_call_sockets: List[WebSocket] = []
@@ -54,73 +67,6 @@ async def broadcast_call_event(data: dict):
         except Exception:
             if ws in active_call_sockets:
                 active_call_sockets.remove(ws)
-
-# Pre-seeded evidence records
-EVIDENCE_RECORDS = [
-    {
-        "id": "deal-901",
-        "vendor": "Apex Grand Hotel & Suites",
-        "category": "Corporate Hotel Rooms (50 Units)",
-        "initial_quote": 2200,
-        "negotiated_price": 1650,
-        "savings": 550,
-        "savings_pct": 25.0,
-        "status": "Deal Secured",
-        "timestamp": "Today, 11:42 AM",
-        "duration": "2m 14s",
-        "perks": "Free high-speed Wi-Fi, late checkout & breakfast vouchers",
-        "evidence_quote": "Alright, if you sign the agreement by 4 PM today, we will honor $1,650 and throw in the breakfast vouchers.",
-        "voice": "en-US-JennyNeural",
-        "transcripts": [
-            {"time": "00:15", "speaker": "Agent", "text": "We need 50 suites for a national conference. What is your base quotation?"},
-            {"time": "00:32", "speaker": "Vendor", "text": "Our standard conference group rate is $2,200 per night for that block."},
-            {"time": "01:05", "speaker": "Agent", "text": "We have an offer from Marriott downtown for $1,800. Can you do $1,600 if we pay in full today?"},
-            {"time": "01:42", "speaker": "Vendor", "text": "Alright, if you sign the agreement by 4 PM today, we will honor $1,650 and throw in the breakfast vouchers."}
-        ]
-    },
-    {
-        "id": "deal-902",
-        "vendor": "BlueWave Office Supplies",
-        "category": "Bulk Ergonomic Workstations",
-        "initial_quote": 1850,
-        "negotiated_price": 1420,
-        "savings": 430,
-        "savings_pct": 23.2,
-        "status": "Deal Secured",
-        "timestamp": "Today, 10:15 AM",
-        "duration": "1m 48s",
-        "perks": "Free 2-day pallet freight + 2 spare ergonomic chairs",
-        "evidence_quote": "We can match your target at $1,420 if you commit to paying via ACH transfer today.",
-        "voice": "en-US-GuyNeural",
-        "transcripts": [
-            {"time": "00:10", "speaker": "Agent", "text": "Inquiring about a 20-unit workstation bundle."},
-            {"time": "00:25", "speaker": "Vendor", "text": "List price is $1,850 plus $150 freight shipping."},
-            {"time": "00:58", "speaker": "Agent", "text": "We need free freight and a sub-$1,450 price point to execute the PO."},
-            {"time": "01:22", "speaker": "Vendor", "text": "We can match your target at $1,420 if you commit to paying via ACH transfer today."}
-        ]
-    },
-    {
-        "id": "deal-903",
-        "vendor": "Gourmet Catering Co.",
-        "category": "Annual Gala Catering (80 Guests)",
-        "initial_quote": 3100,
-        "negotiated_price": 2480,
-        "savings": 620,
-        "savings_pct": 20.0,
-        "status": "Deal Secured",
-        "timestamp": "Yesterday, 4:30 PM",
-        "duration": "3m 05s",
-        "perks": "Artisan dessert station included without surcharge",
-        "evidence_quote": "I spoke with chef Marco. Because of your recurring schedule, we can lock you in at $2,480 flat.",
-        "voice": "en-US-AriaNeural",
-        "transcripts": [
-            {"time": "00:12", "speaker": "Agent", "text": "Requesting full catering package for our upcoming 80-person gala."},
-            {"time": "00:40", "speaker": "Vendor", "text": "Full buffet plus dessert is standard at $3,100."},
-            {"time": "01:20", "speaker": "Agent", "text": "We host 4 of these events every year. If you can do $2,450, we make you our exclusive caterer."},
-            {"time": "02:18", "speaker": "Vendor", "text": "I spoke with chef Marco. Because of your recurring schedule, we can lock you in at $2,480 flat."}
-        ]
-    }
-]
 
 @app.get("/api/voices")
 async def get_voices():
@@ -143,7 +89,7 @@ async def text_to_speech(req: TTSRequest):
 async def roleplay_turn(req: RoleplayRequest):
     """
     Evaluates what the judge/user spoke into the mic as the vendor,
-    and returns the autonomous agent's spoken counter-speech with human intervention support.
+    and returns the autonomous agent's spoken counter-speech with human intervention & company stance support.
     """
     evaluation = NegotiationEngine.evaluate_roleplay_turn(
         user_text=req.user_speech,
@@ -151,7 +97,8 @@ async def roleplay_turn(req: RoleplayRequest):
         last_offer=req.last_offer,
         round_num=req.round or 1,
         batna_price=req.batna_price or 0.0,
-        whisper_instruction=req.whisper_instruction or ""
+        whisper_instruction=req.whisper_instruction or "",
+        company_stance=req.company_stance or "Our company policy limits this category to our target budget"
     )
     return evaluation
 
@@ -175,6 +122,8 @@ async def call_sync_websocket(websocket: WebSocket):
                 whisper = data.get("whisper", "")
                 batna = float(data.get("batna_price", 1680))
                 round_num = int(data.get("round", 1))
+                merchant_name = data.get("merchant_name", "General Merchant")
+                company_stance = data.get("company_stance", "Strict budget enforcement")
 
                 eval_result = NegotiationEngine.evaluate_roleplay_turn(
                     user_text=user_text,
@@ -182,16 +131,19 @@ async def call_sync_websocket(websocket: WebSocket):
                     last_offer=last_offer,
                     round_num=round_num,
                     batna_price=batna,
-                    whisper_instruction=whisper
+                    whisper_instruction=whisper,
+                    company_stance=company_stance
                 )
 
                 await broadcast_call_event({
                     "type": "turn_update",
+                    "merchant_name": merchant_name,
+                    "company_stance": company_stance,
                     "vendor_speech": user_text,
                     "agent_speech": eval_result["agent_speech"],
                     "counter_price": eval_result["counter_price"],
                     "detected_price": eval_result["detected_price"],
-                    "dialogue_act": eval_result["dialogue_act"],
+                    "dialogue_act": eval_result.get("dialogue_act", "Bargaining"),
                     "status": eval_result["status"],
                     "sentiment": eval_result["sentiment"],
                     "round": eval_result["round"],
@@ -214,6 +166,16 @@ async def call_sync_websocket(websocket: WebSocket):
         if websocket in active_call_sockets:
             active_call_sockets.remove(websocket)
 
+# MongoDB / History Storage Endpoints
+@app.post("/api/records/save")
+async def save_record(req: RecordSaveRequest):
+    record_id = HistoryDatabase.save_record(req.dict())
+    return {"status": "success", "record_id": record_id, "merchant": req.merchant_name}
+
+@app.get("/api/merchants")
+async def get_grouped_merchants():
+    return HistoryDatabase.get_grouped_by_merchant()
+
 @app.post("/api/war-room")
 async def simulate_war_room(req: WarRoomRequest):
     simulation = NegotiationEngine.generate_war_room_simulation(
@@ -232,15 +194,43 @@ async def scout_vendors(req: ScoutRequest):
 
 @app.get("/api/records")
 async def get_records():
-    return EVIDENCE_RECORDS
+    grouped = HistoryDatabase.get_grouped_by_merchant()
+    flattened = []
+    for merchant, records in grouped.items():
+        for r in records:
+            flattened.append({
+                "id": r.get("created_at", "rec-1"),
+                "vendor": merchant,
+                "category": r.get("company_stance", "Procurement"),
+                "initial_quote": r.get("initial_offer", 2000),
+                "negotiated_price": r.get("final_price", 1600),
+                "savings": r.get("savings", 400),
+                "savings_pct": round(((r.get("initial_offer", 2000) - r.get("final_price", 1600)) / max(1, r.get("initial_offer", 2000))) * 100, 1),
+                "status": r.get("status", "Deal Secured"),
+                "timestamp": r.get("timestamp", "Recent"),
+                "duration": "2m 10s",
+                "perks": "Verified in MongoDB audit vault",
+                "evidence_quote": r.get("evidence_quote", "Deal closed within budget threshold."),
+                "voice": "en-US-JennyNeural",
+                "transcripts": r.get("dialogue_history", [])
+            })
+    return flattened
 
-# Dedicated Routes for Dual-Device Call Screen
+# Dedicated Routes for Dual-Device Call Screen & Merchant History
 @app.get("/call")
 @app.get("/phone")
 async def call_page():
     phone_path = os.path.join(STATIC_DIR, "phone.html")
     if os.path.exists(phone_path):
         return FileResponse(phone_path)
+    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
+
+@app.get("/history")
+@app.get("/merchants")
+async def history_page():
+    hist_path = os.path.join(STATIC_DIR, "history.html")
+    if os.path.exists(hist_path):
+        return FileResponse(hist_path)
     return FileResponse(os.path.join(STATIC_DIR, "index.html"))
 
 # Static hosting
