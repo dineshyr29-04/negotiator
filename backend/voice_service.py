@@ -14,10 +14,10 @@ VOICE_CATALOG = {
 
 class VoiceService:
     @staticmethod
-    async def synthesize(text: str, voice: str = "en-US-GuyNeural", rate: str = "+0%", pitch: str = "+0Hz") -> io.BytesIO:
+    async def synthesize(text: str, voice: str = "en-US-JennyNeural", rate: str = "+0%", pitch: str = "+0Hz") -> io.BytesIO:
         """
         Synthesizes text into realistic human speech using Microsoft Edge Neural TTS.
-        100% Free, zero API key needed.
+        100% Free, zero API key needed. Default is high-fidelity Female Neural voice (Jenny).
         """
         clean_text = text.strip()
         if not clean_text:
