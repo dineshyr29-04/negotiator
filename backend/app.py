@@ -25,7 +25,7 @@ STATIC_DIR = os.path.join(os.path.dirname(__file__), "..", "static")
 
 class TTSRequest(BaseModel):
     text: str
-    voice: Optional[str] = "en-US-GuyNeural"
+    voice: Optional[str] = "en-US-JennyNeural"
     rate: Optional[str] = "+0%"
     pitch: Optional[str] = "+0Hz"
 
@@ -77,7 +77,7 @@ async def text_to_speech(req: TTSRequest):
     try:
         stream = await VoiceService.synthesize(
             text=req.text,
-            voice=req.voice or "en-US-GuyNeural",
+            voice=req.voice or "en-US-JennyNeural",
             rate=req.rate or "+0%",
             pitch=req.pitch or "+0Hz"
         )

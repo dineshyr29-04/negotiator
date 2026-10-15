@@ -6,14 +6,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "").strip()
-groq_client = None
-if GROQ_API_KEY:
+def get_groq_client():
+    """Dynamically retrieves or re-initializes Groq client if GROQ_API_KEY is updated in .env"""
+    load_dotenv(override=True)
+    key = os.getenv("GROQ_API_KEY", "").strip()
+    if not key or key == "your_groq_api_key_here":
+        return None
     try:
         from groq import Groq
-        groq_client = Groq(api_key=GROQ_API_KEY)
+        return Groq(api_key=key)
     except Exception as e:
-        print(f"Notice: Groq initialization deferred: {e}")
+        print(f"Notice: Groq client creation failed: {e}")
+        return None
 
 class NegotiationEngine:
     """
@@ -47,9 +51,11 @@ class NegotiationEngine:
         Evaluates vendor response and determines agent's spoken counter-speech.
         Enforces company stance and prevents premature agreement on early rounds.
         """
-        if groq_client:
+        client = get_groq_client()
+        if client:
             try:
                 return cls._evaluate_with_groq(
+                    client=client,
                     user_text=user_text,
                     current_target=current_target,
                     last_offer=last_offer,
@@ -59,7 +65,7 @@ class NegotiationEngine:
                     company_stance=company_stance
                 )
             except Exception as e:
-                print(f"Groq API call failed: {e}. Falling back to EACL rule engine.")
+                print(f"Notice: Groq Llama 3 API error: {e}. Gracefully falling back to EACL rule engine.")
 
         return cls._evaluate_rule_based(
             user_text=user_text,
@@ -74,6 +80,7 @@ class NegotiationEngine:
     @classmethod
     def _evaluate_with_groq(
         cls,
+        client: Any,
         user_text: str,
         current_target: float,
         last_offer: float,
@@ -114,8 +121,19 @@ Return ONLY a valid JSON object with EXACTLY this structure:
   "status": "counter_offered" or "deal_closed"
 }}"""
 
-        response = groq_client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+        # Determine best available model for this Groq key
+        target_model = "llama-3.3-70b-versatile"
+        try:
+            available_models = [m.id for m in client.models.list().data]
+            for candidate in ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "llama3-70b-8192", "llama3-8b-8192"]:
+                if candidate in available_models:
+                    target_model = candidate
+                    break
+        except Exception:
+            pass
+
+        response = client.chat.completions.create(
+            model=target_model,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Vendor just said: \"{user_text}\""}
