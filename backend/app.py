@@ -211,7 +211,7 @@ async def get_records():
                 "duration": "2m 10s",
                 "perks": "Verified in MongoDB audit vault",
                 "evidence_quote": r.get("evidence_quote", "Deal closed within budget threshold."),
-                "voice": "en-US-JennyNeural",
+                "voice": "en-US-GuyNeural",
                 "transcripts": r.get("dialogue_history", [])
             })
     return flattened

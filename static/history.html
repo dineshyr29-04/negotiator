@@ -222,7 +222,7 @@
         const res = await fetch('/api/tts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, voice: 'en-US-JennyNeural' })
+          body: JSON.stringify({ text, voice: 'en-US-GuyNeural' })
         });
         const blob = await res.blob();
         audioPlayer.src = URL.createObjectURL(blob);

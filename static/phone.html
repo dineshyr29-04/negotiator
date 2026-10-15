@@ -392,7 +392,7 @@
           savings: finalSavings,
           status: lastOffer <= targetPrice ? "Deal Secured" : "Negotiation Archived",
           dialogue_history: currentDialogueHistory,
-          evidence_quote: lastEvidenceQuote || `Agreed at $${lastOffer:,.2f}`
+          evidence_quote: lastEvidenceQuote || `Agreed at $${Number(lastOffer).toFixed(2)}`
         });
 
         // Call Summary Note with Link to History
