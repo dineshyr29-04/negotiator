@@ -546,7 +546,35 @@
         }));
         activeWhisper = "";
       } else {
-        alert("Reconnecting WebSocket... please wait a second.");
+        // Fallback gracefully via HTTP REST without alerting
+        fetch('/api/roleplay', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_speech: text,
+            target_price: targetPrice,
+            last_offer: lastOffer,
+            batna_price: batnaPrice,
+            whisper_instruction: activeWhisper,
+            round: roundCount
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          handleTurnUpdate({
+            vendor_speech: text,
+            agent_speech: data.agent_speech,
+            counter_price: data.counter_price,
+            detected_price: data.detected_price,
+            dialogue_act: data.dialogue_act,
+            sentiment: data.sentiment,
+            round: data.round
+          });
+          activeWhisper = "";
+        })
+        .catch(err => {
+          console.error("Fallback error:", err);
+        });
       }
     }
 
