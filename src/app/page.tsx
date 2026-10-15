@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+const RAW_API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+const API_BASE = RAW_API_BASE.replace(/\/+$/, "");
 
 // ── Types ──────────────────────────────────────────────────────────────────
 type TurnState = "STANDBY" | "AI_SPEAKING" | "USER_TURN" | "AI_REASONING";
@@ -258,9 +259,18 @@ export default function HomePage() {
   // ── WebSocket ──
   function connectWebSocket() {
     try {
-      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const host = API_BASE.replace(/^https?:\/\//, "") || window.location.host;
-      const ws = new WebSocket(`${protocol}//${host}/ws/call`);
+      let wsUrl: string;
+      if (API_BASE) {
+        const isHttps = API_BASE.startsWith("https://");
+        const wsProto = isHttps ? "wss:" : "ws:";
+        const host = API_BASE.replace(/^https?:\/\//, "");
+        wsUrl = `${wsProto}//${host}/ws/call`;
+      } else {
+        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        wsUrl = `${protocol}//${window.location.host}/ws/call`;
+      }
+
+      const ws = new WebSocket(wsUrl);
       socketRef.current = ws;
       ws.onmessage = (ev) => {
         try {
