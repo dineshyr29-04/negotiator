@@ -33,6 +33,8 @@ class RoleplayRequest(BaseModel):
     target_price: float
     last_offer: float
     round: Optional[int] = 1
+    batna_price: Optional[float] = 0.0
+    whisper_instruction: Optional[str] = ""
 
 class WarRoomRequest(BaseModel):
     category: str
@@ -130,13 +132,15 @@ async def text_to_speech(req: TTSRequest):
 async def roleplay_turn(req: RoleplayRequest):
     """
     Evaluates what the judge/user spoke into the mic as the vendor,
-    and returns the autonomous agent's spoken counter-speech.
+    and returns the autonomous agent's spoken counter-speech with human intervention support.
     """
     evaluation = NegotiationEngine.evaluate_roleplay_turn(
         user_text=req.user_speech,
         current_target=req.target_price,
         last_offer=req.last_offer,
-        round_num=req.round or 1
+        round_num=req.round or 1,
+        batna_price=req.batna_price or 0.0,
+        whisper_instruction=req.whisper_instruction or ""
     )
     return evaluation
 
