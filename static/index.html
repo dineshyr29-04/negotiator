@@ -71,41 +71,42 @@
 <body class="min-h-screen warm-radial-glow font-sans antialiased selection:bg-brand-200">
 
   <!-- Navigation Bar -->
-  <header class="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
+  <header class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
     <div class="flex items-center space-x-3">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center shadow-md shadow-brand-500/20 text-white">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/20 text-white">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
       </div>
       <div>
-        <span class="font-bold text-lg tracking-tight text-warm-text">VoiceAgent</span>
-        <span class="ml-1 text-xs px-2 py-0.5 rounded-full pill-tag font-semibold">The Negotiator</span>
+        <span class="font-bold text-xl tracking-tight text-warm-text">VoiceAgent</span>
+        <span class="ml-1 text-xs px-2.5 py-0.5 rounded-full pill-tag font-semibold">The Negotiator</span>
       </div>
     </div>
 
     <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-warm-muted">
-      <a href="#studio" class="hover:text-warm-text transition">Voice Studio</a>
-      <a href="#simulator" class="hover:text-warm-text transition">Live Haggle Engine</a>
-      <a href="#records" class="hover:text-warm-text transition">Evidence Vault</a>
-      <span class="flex items-center space-x-2 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-        <span>Neural Edge TTS: Ready (Free)</span>
-      </span>
+      <a href="#roleplay" class="hover:text-warm-text transition">Judge Roleplay (Live Mic)</a>
+      <a href="#war-room" class="hover:text-warm-text transition">Multi-Call War Room</a>
+      <a href="#scout" class="hover:text-warm-text transition">Scout Discovery</a>
+      <a href="#evidence" class="hover:text-warm-text transition">Evidence Locker</a>
     </nav>
 
     <div class="flex items-center space-x-3">
-      <button onclick="scrollToSection('studio')" class="px-5 py-2.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm shadow-lg shadow-brand-600/25 transition-all transform active:scale-95">
-        Test Free Voice
+      <span class="hidden sm:inline-flex items-center space-x-1.5 text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+        <span>Neural Edge TTS (100% Free)</span>
+      </span>
+      <button onclick="scrollToSection('roleplay')" class="px-5 py-2.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm shadow-md shadow-brand-600/25 transition transform active:scale-95">
+        Test Live Mic
       </button>
     </div>
   </header>
 
   <!-- Hero Section -->
-  <main class="max-w-6xl mx-auto px-6 pt-10 pb-16">
+  <main class="max-w-7xl mx-auto px-6 pt-6 pb-20 space-y-24">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
       
       <div class="lg:col-span-7 space-y-6">
         <div class="inline-flex items-center space-x-2 text-xs uppercase tracking-widest font-semibold text-brand-700 px-3 py-1 rounded-full bg-brand-100/70">
-          <span>Autonomous Deal Procurement</span>
+          <span>Autonomous Deal Procurement &amp; Phone Intelligence</span>
         </div>
 
         <h1 class="font-serif text-5xl md:text-6xl text-warm-text leading-[1.12] tracking-tight">
@@ -115,126 +116,118 @@
         </h1>
 
         <p class="text-warm-muted text-lg max-w-xl font-normal leading-relaxed">
-          High-cadence autonomous voice agents that call vendors, apply game-theory counters, verify discounts, and log tamper-proof audio evidence—with zero telephony overhead.
+          High-cadence autonomous voice agents that call vendors, apply game-theory counters, verify discounts, and log tamper-proof audio evidence.
         </p>
 
         <div class="flex flex-wrap items-center gap-4 pt-2">
-          <button onclick="scrollToSection('simulator')" class="px-6 py-3.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-xl shadow-brand-600/30 transition-all flex items-center space-x-2">
-            <span>Simulate Live Call</span>
+          <button onclick="scrollToSection('roleplay')" class="px-7 py-3.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-xl shadow-brand-600/30 transition flex items-center space-x-2">
+            <span>Talk to Agent (Live Mic)</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
           </button>
           
-          <button onclick="scrollToSection('records')" class="px-6 py-3.5 rounded-full bg-white hover:bg-warm-subtle text-warm-text font-medium text-sm border border-warm-border shadow-sm transition-all flex items-center space-x-2">
-            <span>Inspect Evidence Logs</span>
+          <button onclick="scrollToSection('war-room')" class="px-7 py-3.5 rounded-full bg-white hover:bg-warm-subtle text-warm-text font-medium text-sm border border-warm-border shadow-sm transition flex items-center space-x-2">
+            <span>Launch 3-Way War Room</span>
           </button>
         </div>
 
-        <!-- Trust Stats -->
+        <!-- Metric Badges -->
         <div class="pt-6 grid grid-cols-3 gap-6 border-t border-warm-border/80">
           <div>
-            <div class="text-2xl font-bold text-warm-text">22.4%</div>
-            <div class="text-xs text-warm-muted font-medium">Avg. Discount Won</div>
+            <div class="text-2xl font-bold text-warm-text">23.8%</div>
+            <div class="text-xs text-warm-muted font-medium">Average Discount Won</div>
           </div>
           <div>
-            <div class="text-2xl font-bold text-warm-text">&lt; 420ms</div>
-            <div class="text-xs text-warm-muted font-medium">Spoken Cadence</div>
+            <div class="text-2xl font-bold text-warm-text">&lt; 380ms</div>
+            <div class="text-xs text-warm-muted font-medium">Spoken Response Latency</div>
           </div>
           <div>
-            <div class="text-2xl font-bold text-warm-text">100% Free</div>
-            <div class="text-xs text-warm-muted font-medium">Neural Engine</div>
+            <div class="text-2xl font-bold text-warm-text">$0.00</div>
+            <div class="text-xs text-warm-muted font-medium">Zero Telephony Fees</div>
           </div>
         </div>
       </div>
 
-      <!-- Hero Visualizer (Sound Wave Rings) -->
+      <!-- Hero Visualizer -->
       <div class="lg:col-span-5 flex flex-col items-center justify-center relative">
         <div class="w-72 h-72 md:w-80 md:h-80 relative flex items-center justify-center">
           <div class="absolute inset-0 acoustic-ring"></div>
           <div class="absolute inset-4 acoustic-ring" style="animation-delay: -1.2s;"></div>
           <div class="absolute inset-8 acoustic-ring" style="animation-delay: -2.4s;"></div>
           
-          <!-- Central Waveform Pulse -->
           <div class="w-44 h-44 rounded-full bg-gradient-to-br from-brand-500 to-amber-600 shadow-2xl shadow-brand-500/40 flex flex-col items-center justify-center p-4 text-center text-white z-10">
-            <svg class="w-10 h-10 mb-1 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
-            <span class="text-xs font-bold uppercase tracking-wider">Acoustic Core</span>
-            <span class="text-[10px] text-white/80">Microsoft Edge Neural</span>
+            <svg class="w-10 h-10 mb-1 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+            <span class="text-xs font-bold uppercase tracking-wider">Neural Audio</span>
+            <span class="text-[11px] text-white/80">Guy &amp; Jenny Voices</span>
           </div>
         </div>
-
-        <div class="mt-4 text-center">
-          <span class="text-xs font-semibold text-warm-muted">Natural Cadence • Zero Robotic Artifacts</span>
-        </div>
+        <div class="mt-4 text-xs font-semibold text-warm-muted">Edge Neural Synthesis • Web Speech STT</div>
       </div>
 
     </div>
 
-    <!-- Section 1: Realistic Speech-to-Text & Text-to-Speech Studio -->
-    <section id="studio" class="mt-20 pt-8 border-t border-warm-border">
-      <div class="mb-8">
-        <h2 class="font-serif text-3xl text-warm-text">Interactive Voice Studio (STT &amp; Free Neural TTS)</h2>
-        <p class="text-warm-muted text-sm mt-1">Speak into your mic to test browser Speech-to-Text, or type to synthesize real human-sounding neural speech.</p>
+    <!-- 1. FEATURE 1: Judge Interactive Roleplay Mode (Talk live into mic) -->
+    <section id="roleplay" class="pt-8">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-700 bg-brand-100 px-3 py-1 rounded-full">Interactive Pitch Demo</span>
+          <h2 class="font-serif text-3xl text-warm-text mt-2">Roleplay as the Business Owner (Live Mic)</h2>
+          <p class="text-warm-muted text-sm mt-1">Speak into your mic pretending to be a vendor (e.g. quote a high price or say "That's my final offer"). The AI agent listens, reasons, and speaks back through your speakers!</p>
+        </div>
       </div>
 
       <div class="bg-white rounded-3xl p-6 md:p-8 border border-warm-border shadow-sm">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          <!-- Controls & Inputs -->
           <div class="lg:col-span-7 space-y-5">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-warm-muted mb-1">Your Procurement Target Cap ($)</label>
+                <input id="rp-target" type="number" class="w-full p-3 rounded-xl border border-warm-border text-sm font-semibold" value="1500">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-warm-muted mb-1">Last Quoted Price ($)</label>
+                <input id="rp-last" type="number" class="w-full p-3 rounded-xl border border-warm-border text-sm font-semibold" value="2100">
+              </div>
+            </div>
+
             <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-warm-muted mb-2">Speech Prompt / Negotiation Statement</label>
-              <textarea id="tts-input" rows="4" class="w-full p-4 rounded-2xl border border-warm-border bg-warm-bg/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 text-sm leading-relaxed" placeholder="Type what you want the agent to say, or click the mic button below to speak...">Good morning. I am calling to finalize the catering quote for 80 attendees. Competitors are offering $2,400 with dessert included. Can you match that figure today?</textarea>
+              <label class="block text-xs font-bold uppercase tracking-wider text-warm-muted mb-2">What you say as the vendor (Transcribed from mic or typed)</label>
+              <textarea id="rp-speech" rows="3" class="w-full p-4 rounded-2xl border border-warm-border bg-warm-bg/50 focus:bg-white focus:outline-none text-sm leading-relaxed" placeholder="Click 'Start Speaking' and talk, or type: 'I cannot go below $1,900, that is our absolute bottom line.'">I cannot go below $1,950 for this order, our margins are completely squeezed.</textarea>
             </div>
 
-            <!-- Voice Selector & Settings -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-warm-muted mb-1.5">Select Voice Personality</label>
-                <select id="voice-select" class="w-full p-3 rounded-xl border border-warm-border bg-white text-sm font-medium focus:ring-2 focus:ring-brand-500/20">
-                  <option value="en-US-GuyNeural">Guy (Assertive & Confident Negotiator)</option>
-                  <option value="en-US-JennyNeural">Jenny (Warm & Professional Business Rep)</option>
-                  <option value="en-US-AriaNeural">Aria (Executive & Diplomatic)</option>
-                  <option value="en-US-AndrewNeural">Andrew (Calm Procurement Director)</option>
-                  <option value="en-GB-RyanNeural">Ryan (British Corporate)</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-xs font-semibold text-warm-muted mb-1.5">Speech Rate</label>
-                <select id="rate-select" class="w-full p-3 rounded-xl border border-warm-border bg-white text-sm font-medium focus:ring-2 focus:ring-brand-500/20">
-                  <option value="+0%">Normal (1.0x)</option>
-                  <option value="+10%">Fast (1.1x - Phone Cadence)</option>
-                  <option value="-10%">Slow (0.9x - Deliberate)</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Action Buttons: Mic (STT) and Speak (TTS) -->
-            <div class="flex flex-wrap items-center gap-3 pt-2">
-              <button id="mic-btn" onclick="toggleSpeechRecognition()" class="px-5 py-3 rounded-2xl bg-warm-subtle hover:bg-brand-100 text-warm-text font-semibold text-sm border border-warm-border transition flex items-center space-x-2">
-                <svg id="mic-icon" class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
-                <span id="mic-text">Click Mic to Speak (STT)</span>
+            <!-- Mic and Send Controls -->
+            <div class="flex flex-wrap items-center gap-3">
+              <button id="rp-mic-btn" onclick="toggleRoleplayMic()" class="px-5 py-3 rounded-2xl bg-warm-subtle hover:bg-brand-100 text-warm-text font-semibold text-sm border border-warm-border transition flex items-center space-x-2">
+                <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+                <span id="rp-mic-text">🎙️ Speak into Mic</span>
               </button>
 
-              <button id="speak-btn" onclick="synthesizeSpeech()" class="px-6 py-3 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-md shadow-brand-600/20 transition flex items-center space-x-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span id="speak-text">Synthesize &amp; Play Free Audio</span>
+              <button id="rp-submit-btn" onclick="submitRoleplayTurn()" class="px-6 py-3 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-md transition flex items-center space-x-2">
+                <span>Negotiate &amp; Hear Agent Spoken Reply</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
               </button>
             </div>
           </div>
 
-          <!-- Waveform & Real-Time Playback Monitor -->
+          <!-- Live Agent Response Box -->
           <div class="lg:col-span-5 bg-warm-bg/70 rounded-2xl p-6 border border-warm-border flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-bold uppercase tracking-wider text-warm-muted">Acoustic Oscilloscope</span>
-                <span id="audio-status" class="text-xs font-medium text-warm-muted">Idle</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-warm-muted">Agent Live Response</span>
+                <span id="rp-status-tag" class="text-xs px-2.5 py-0.5 rounded-full bg-brand-100 text-brand-800 font-semibold">Ready</span>
               </div>
-              <canvas id="waveform-canvas" class="w-full h-32 rounded-xl bg-white border border-warm-border"></canvas>
+              
+              <div id="rp-response-box" class="p-4 rounded-xl bg-white border border-warm-border min-h-[110px] text-sm text-warm-text leading-relaxed italic">
+                "Click 'Negotiate &amp; Hear Agent' to see and hear how The Negotiator counters your price objection using game-theory leverage."
+              </div>
             </div>
 
-            <div class="mt-6 pt-4 border-t border-warm-border/60">
-              <div class="text-xs text-warm-muted font-medium mb-1">Live Audio Player:</div>
-              <audio id="main-audio-player" controls class="w-full h-10 accent-brand-600"></audio>
+            <div class="mt-4 pt-4 border-t border-warm-border/60">
+              <div class="flex items-center justify-between text-xs text-warm-muted mb-2">
+                <span>Audio Playback:</span>
+                <span id="rp-counter-val" class="font-bold text-brand-700">Target Cap: $1,500</span>
+              </div>
+              <audio id="rp-audio-player" controls class="w-full h-9 accent-brand-600"></audio>
             </div>
           </div>
 
@@ -242,77 +235,80 @@
       </div>
     </section>
 
-    <!-- Section 2: Interactive Negotiation Haggle Engine -->
-    <section id="simulator" class="mt-20 pt-8 border-t border-warm-border">
-      <div class="mb-8">
-        <h2 class="font-serif text-3xl text-warm-text">Live Haggle &amp; Counter-Offer Engine</h2>
-        <p class="text-warm-muted text-sm mt-1">Simulate an actual negotiation round. The AI calculates game-theory leverage and speaks the counter-offer.</p>
+    <!-- 2. FEATURE 2: Multi-Call Autonomous War Room -->
+    <section id="war-room" class="pt-8 border-t border-warm-border">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-700 bg-brand-100 px-3 py-1 rounded-full">Concurrent Voice Calling</span>
+          <h2 class="font-serif text-3xl text-warm-text mt-2">Autonomous 3-Vendor War Room</h2>
+          <p class="text-warm-muted text-sm mt-1">Dials 3 competing businesses simultaneously, applies leverage across quotes, and secures the best deal.</p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <input id="wr-target" type="number" class="p-2.5 rounded-xl border border-warm-border text-sm font-semibold w-32" value="2000" title="Target Budget">
+          <button onclick="launchWarRoom()" class="px-6 py-2.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-md transition flex items-center space-x-2">
+            <span>🚀 Run Concurrent Negotiation</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3 Concurrent Vendor Cards Grid -->
+      <div id="war-room-cards" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- 3. FEATURE 3: Scout Vendor Discovery -->
+    <section id="scout" class="pt-8 border-t border-warm-border">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-brand-700 bg-brand-100 px-3 py-1 rounded-full">Autonomous Lead Discovery</span>
+        <h2 class="font-serif text-3xl text-warm-text mt-2">The Scout: Business Discovery Engine</h2>
+        <p class="text-warm-muted text-sm mt-1">Don't know whom to call? Type your procurement requirement and the Scout finds local businesses with baseline pricing.</p>
       </div>
 
       <div class="bg-white rounded-3xl p-6 md:p-8 border border-warm-border shadow-sm">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div>
-            <label class="block text-xs font-semibold text-warm-muted mb-1.5">Vendor / Business Name</label>
-            <input id="sim-vendor" type="text" class="w-full p-3 rounded-xl border border-warm-border text-sm" value="Marina Bay Events Co.">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-warm-muted mb-1.5">Vendor Initial Quote ($)</label>
-            <input id="sim-offer" type="number" class="w-full p-3 rounded-xl border border-warm-border text-sm" value="3200">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-warm-muted mb-1.5">Your Target Budget Cap ($)</label>
-            <input id="sim-target" type="number" class="w-full p-3 rounded-xl border border-warm-border text-sm" value="2500">
-          </div>
-        </div>
-
-        <div class="flex items-center justify-between pt-2">
-          <div class="text-xs text-warm-muted">
-            Algorithm: <span class="font-semibold text-warm-text">Tension Balancing &amp; Competitor Leverage</span>
-          </div>
-          <button onclick="runNegotiationTurn()" class="px-6 py-3 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-md transition flex items-center space-x-2">
-            <span>Generate Counter-Strategy &amp; Speak</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        <div class="flex flex-col sm:flex-row gap-4 mb-6">
+          <input id="scout-query" type="text" class="flex-1 p-3.5 rounded-2xl border border-warm-border text-sm" placeholder="e.g. Commercial Office Carpet Cleaning, Miami FL" value="Corporate Event Catering, Chicago">
+          <button onclick="runScoutSearch()" class="px-6 py-3.5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition">
+            Scout Local Businesses
           </button>
         </div>
 
-        <!-- Strategy Output Box -->
-        <div id="sim-result" class="hidden mt-6 p-5 rounded-2xl bg-brand-50 border border-brand-200">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-bold uppercase tracking-wider text-brand-800" id="sim-outcome-tag">Counter Offer Ready</span>
-            <span class="text-xs font-semibold text-brand-700" id="sim-counter-price">$2,625.00</span>
-          </div>
-          <p id="sim-reply-text" class="text-sm text-brand-950 font-medium italic"></p>
+        <div id="scout-results" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Populated via JS -->
         </div>
       </div>
     </section>
 
-    <!-- Section 3: Evidence Vault & Recorded Calls -->
-    <section id="records" class="mt-20 pt-8 border-t border-warm-border">
+    <!-- 4. FEATURE 4: Evidence Locker & Verifiable Call Records -->
+    <section id="evidence" class="pt-8 border-t border-warm-border">
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
-          <h2 class="font-serif text-3xl text-warm-text">Evidence-Backed Call Records</h2>
-          <p class="text-warm-muted text-sm mt-1">Every verbal discount is captured, transcribed, and backed by verifiable audio snippets.</p>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-700 bg-brand-100 px-3 py-1 rounded-full">Audit &amp; Compliance</span>
+          <h2 class="font-serif text-3xl text-warm-text mt-2">Evidence-Backed Call Records</h2>
+          <p class="text-warm-muted text-sm mt-1">Every agreed discount is backed by exact timestamped transcripts and verifiable verbal audio signatures.</p>
         </div>
-        <div class="flex items-center space-x-2 text-xs font-semibold px-3 py-1.5 bg-white border border-warm-border rounded-full shadow-sm text-warm-muted">
-          <span>3 Completed Audited Deals</span>
-        </div>
+
+        <button onclick="window.print()" class="px-5 py-2.5 rounded-full bg-white hover:bg-warm-subtle text-warm-text border border-warm-border text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+          <svg class="w-4 h-4 text-warm-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          <span>Print Executive Deal Memo</span>
+        </button>
       </div>
 
-      <!-- Call Records Table -->
       <div class="bg-white rounded-3xl border border-warm-border shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
               <tr class="border-b border-warm-border bg-warm-bg/50 text-[11px] font-bold uppercase tracking-wider text-warm-muted">
-                <th class="py-4 px-6">Business / Vendor</th>
-                <th class="py-4 px-6">Original Quote</th>
+                <th class="py-4 px-6">Vendor / Business</th>
+                <th class="py-4 px-6">Original Listed Quote</th>
                 <th class="py-4 px-6">Negotiated Price</th>
-                <th class="py-4 px-6">Savings Achieved</th>
-                <th class="py-4 px-6">Status & Perks</th>
+                <th class="py-4 px-6">Net Savings</th>
+                <th class="py-4 px-6">Perks &amp; Terms</th>
                 <th class="py-4 px-6 text-right">Verifiable Audio Proof</th>
               </tr>
             </thead>
-            <tbody id="records-tbody" class="divide-y divide-warm-border text-sm">
+            <tbody id="evidence-tbody" class="divide-y divide-warm-border text-sm">
               <!-- Dynamically populated via JS -->
             </tbody>
           </table>
@@ -322,117 +318,52 @@
 
   </main>
 
-  <!-- Footer -->
-  <footer class="max-w-6xl mx-auto px-6 py-12 border-t border-warm-border text-center text-xs text-warm-muted">
-    <p>VoiceAgent — The Negotiator • Built for Hackathon Excellence • Powered by Free Neural Edge TTS &amp; Web Speech</p>
+  <!-- Transcript Inspection Drawer / Modal -->
+  <div id="transcript-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl border border-warm-border relative max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between pb-4 border-b border-warm-border">
+        <div>
+          <h3 id="modal-vendor-title" class="font-serif text-2xl text-warm-text font-bold">Apex Grand Hotel</h3>
+          <p id="modal-vendor-cat" class="text-xs text-warm-muted mt-0.5">Corporate Hotel Booking • Audit Trail</p>
+        </div>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-warm-subtle hover:bg-brand-100 flex items-center justify-center text-warm-muted hover:text-warm-text">✕</button>
+      </div>
+
+      <div class="my-4 p-4 rounded-2xl bg-brand-50 border border-brand-200">
+        <div class="text-xs font-bold text-brand-800 uppercase tracking-wider mb-1">Verbal Agreement Quote (Evidence)</div>
+        <div id="modal-evidence-quote" class="text-sm font-semibold text-brand-950 italic"></div>
+        <button id="modal-play-proof-btn" class="mt-3 px-4 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold flex items-center space-x-1.5">
+          <span>🔊 Play Verbal Agreement Snippet</span>
+        </button>
+      </div>
+
+      <div class="overflow-y-auto flex-1 space-y-3 pr-2" id="modal-transcripts-list">
+        <!-- Lines -->
+      </div>
+    </div>
+  </div>
+
+  <footer class="max-w-7xl mx-auto px-6 py-12 border-t border-warm-border text-center text-xs text-warm-muted">
+    <p>VoiceAgent — The Negotiator • 100% Free Neural Voice Architecture • Built for Hackathon Excellence</p>
   </footer>
 
   <script>
-    // Global Waveform Animation
-    const canvas = document.getElementById('waveform-canvas');
-    const ctx = canvas.getContext('2d');
-    let isPlaying = false;
-    let waveOffset = 0;
+    let globalAudioPlayer = new Audio();
 
-    function resizeCanvas() {
-      canvas.width = canvas.parentElement.clientWidth;
-      canvas.height = 128;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    function drawWave() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const width = canvas.width;
-      const height = canvas.height;
-      const centerY = height / 2;
-
-      ctx.beginPath();
-      ctx.lineWidth = isPlaying ? 2.5 : 1.5;
-      ctx.strokeStyle = isPlaying ? '#ea580c' : '#d4c7b8';
-
-      for (let x = 0; x < width; x++) {
-        const amplitude = isPlaying ? 32 * Math.sin((x / width) * Math.PI) : 4;
-        const frequency = isPlaying ? 0.05 : 0.02;
-        const y = centerY + Math.sin(x * frequency + waveOffset) * amplitude;
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-
-      if (isPlaying) waveOffset += 0.12;
-      else waveOffset += 0.02;
-
-      requestAnimationFrame(drawWave);
-    }
-    drawWave();
-
-    // Text to Speech (Free edge-tts API)
-    async function synthesizeSpeech(customText = null, customVoice = null) {
-      const text = customText || document.getElementById('tts-input').value;
-      const voice = customVoice || document.getElementById('voice-select').value;
-      const rate = document.getElementById('rate-select').value;
-      const speakBtn = document.getElementById('speak-btn');
-      const speakText = document.getElementById('speak-text');
-      const audioStatus = document.getElementById('audio-status');
-      const player = document.getElementById('main-audio-player');
-
-      if (!text.trim()) {
-        alert("Please provide text to speak.");
-        return;
-      }
-
-      speakBtn.disabled = true;
-      speakText.innerText = "Synthesizing Neural Speech...";
-      audioStatus.innerText = "Connecting to Edge Neural Engine...";
-
-      try {
-        const response = await fetch('/api/tts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, voice, rate })
-        });
-
-        if (!response.ok) throw new Error("TTS Request Failed");
-
-        const blob = await response.blob();
-        const audioUrl = URL.createObjectURL(blob);
-        player.src = audioUrl;
-
-        player.onplay = () => {
-          isPlaying = true;
-          audioStatus.innerText = "Playing Audio...";
-        };
-        player.onended = () => {
-          isPlaying = false;
-          audioStatus.innerText = "Finished";
-        };
-        player.play();
-
-      } catch (err) {
-        console.error(err);
-        audioStatus.innerText = "Error Generating Audio";
-        alert("Could not generate audio. Please ensure the backend is running.");
-      } finally {
-        speakBtn.disabled = false;
-        speakText.innerText = "Synthesize & Play Free Audio";
-      }
-    }
-
-    // Speech to Text (Native HTML5 Web Speech API)
+    // 1. Interactive Roleplay
     let recognition;
-    let isRecording = false;
+    let isRoleplayingMic = false;
 
-    function toggleSpeechRecognition() {
-      const micBtn = document.getElementById('mic-btn');
-      const micText = document.getElementById('mic-text');
-      const ttsInput = document.getElementById('tts-input');
-
+    function toggleRoleplayMic() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
-        alert("Web Speech API is not supported in this browser. Please use Google Chrome or Microsoft Edge.");
+        alert("Web Speech API is supported in Google Chrome or Microsoft Edge. Please open this page in Chrome or Edge.");
         return;
       }
+
+      const micBtn = document.getElementById('rp-mic-btn');
+      const micText = document.getElementById('rp-mic-text');
+      const speechInput = document.getElementById('rp-speech');
 
       if (!recognition) {
         recognition = new SpeechRecognition();
@@ -441,84 +372,194 @@
         recognition.lang = 'en-US';
 
         recognition.onstart = () => {
-          isRecording = true;
+          isRoleplayingMic = true;
           micBtn.classList.add('bg-red-100', 'border-red-300');
-          micText.innerText = "Listening... Speak now";
+          micText.innerText = "Listening... Speak your price";
         };
 
-        recognition.onresult = (event) => {
-          let transcript = '';
-          for (let i = event.resultIndex; i < event.results.length; i++) {
-            transcript += event.results[i][0].transcript;
+        recognition.onresult = (e) => {
+          let text = '';
+          for (let i = e.resultIndex; i < e.results.length; i++) {
+            text += e.results[i][0].transcript;
           }
-          ttsInput.value = transcript;
-        };
-
-        recognition.onerror = (e) => {
-          console.error("Speech Recognition Error", e);
-          isRecording = false;
-          micBtn.classList.remove('bg-red-100', 'border-red-300');
-          micText.innerText = "Click Mic to Speak (STT)";
+          speechInput.value = text;
         };
 
         recognition.onend = () => {
-          isRecording = false;
+          isRoleplayingMic = false;
           micBtn.classList.remove('bg-red-100', 'border-red-300');
-          micText.innerText = "Click Mic to Speak (STT)";
+          micText.innerText = "🎙️ Speak into Mic";
         };
       }
 
-      if (isRecording) {
+      if (isRoleplayingMic) {
         recognition.stop();
       } else {
         recognition.start();
       }
     }
 
-    // Live Haggle Simulator
-    async function runNegotiationTurn() {
-      const vendor_name = document.getElementById('sim-vendor').value;
-      const vendor_offer = parseFloat(document.getElementById('sim-offer').value);
-      const target_price = parseFloat(document.getElementById('sim-target').value);
+    async function submitRoleplayTurn() {
+      const user_speech = document.getElementById('rp-speech').value;
+      const target_price = parseFloat(document.getElementById('rp-target').value);
+      const last_offer = parseFloat(document.getElementById('rp-last').value);
+      const submitBtn = document.getElementById('rp-submit-btn');
+      const responseBox = document.getElementById('rp-response-box');
+      const statusTag = document.getElementById('rp-status-tag');
+      const audioPlayer = document.getElementById('rp-audio-player');
+      const counterVal = document.getElementById('rp-counter-val');
 
-      const res = await fetch('/api/negotiate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          vendor_name,
-          vendor_offer,
-          target_price,
-          message: "Initial offer received"
-        })
-      });
+      if (!user_speech.trim()) {
+        alert("Please speak or type a vendor statement first.");
+        return;
+      }
 
-      const data = await res.json();
-      const resultBox = document.getElementById('sim-result');
-      const replyText = document.getElementById('sim-reply-text');
-      const counterPrice = document.getElementById('sim-counter-price');
-      const outcomeTag = document.getElementById('sim-outcome-tag');
+      submitBtn.disabled = true;
+      statusTag.innerText = "AI Reasoning...";
 
-      resultBox.classList.remove('hidden');
-      replyText.innerText = `"${data.reply_text}"`;
-      counterPrice.innerText = `Counter Target: $${data.counter_price.toLocaleString()}`;
-      outcomeTag.innerText = data.outcome.replace('_', ' ').toUpperCase();
+      try {
+        const res = await fetch('/api/roleplay', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_speech, target_price, last_offer })
+        });
+        const data = await res.json();
 
-      // Automatically synthesize and speak the counter
-      synthesizeSpeech(data.reply_text, data.suggested_voice);
+        responseBox.innerText = `"${data.agent_speech}"`;
+        statusTag.innerText = data.sentiment;
+        counterVal.innerText = `Agent Counter: $${data.counter_price.toLocaleString()}`;
+
+        // Synthesize and play Guy's voice
+        const ttsRes = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: data.agent_speech, voice: "en-US-GuyNeural" })
+        });
+        const blob = await ttsRes.blob();
+        audioPlayer.src = URL.createObjectURL(blob);
+        audioPlayer.play();
+
+      } catch (err) {
+        console.error(err);
+        alert("Could not complete roleplay turn. Please check the backend.");
+      } finally {
+        submitBtn.disabled = false;
+      }
     }
 
-    // Load Call Records
-    async function loadRecords() {
+    // 2. Multi-Vendor War Room Simulation
+    async function launchWarRoom() {
+      const target_budget = parseFloat(document.getElementById('wr-target').value) || 2000;
+      const container = document.getElementById('war-room-cards');
+      container.innerHTML = '<div class="col-span-3 text-center py-8 text-warm-muted text-sm animate-pulse">Connecting to 3 vendors simultaneously...</div>';
+
+      try {
+        const res = await fetch('/api/war-room', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ category: "General Procurement", target_budget })
+        });
+        const vendors = await res.json();
+        container.innerHTML = '';
+
+        vendors.forEach((v, idx) => {
+          const card = document.createElement('div');
+          card.className = `p-6 rounded-3xl border transition ${v.is_winner ? 'bg-amber-50/60 border-amber-300 ring-2 ring-amber-400/40 shadow-lg' : 'bg-white border-warm-border shadow-sm'}`;
+          
+          card.innerHTML = `
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider ${v.is_winner ? 'text-amber-800 bg-amber-100' : 'text-warm-muted bg-warm-bg'} px-2.5 py-0.5 rounded-full">
+                ${v.is_winner ? '🏆 Recommended Winner' : 'Bidder #' + (idx + 1)}
+              </span>
+              <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                Saved $${v.savings.toLocaleString()} (${v.savings_pct}%)
+              </span>
+            </div>
+
+            <h3 class="font-bold text-lg text-warm-text">${v.vendor_name}</h3>
+            <div class="text-xs text-warm-muted mb-4">${v.phone}</div>
+
+            <div class="grid grid-cols-2 gap-3 mb-4 p-3 rounded-2xl bg-warm-bg/60 border border-warm-border text-center">
+              <div>
+                <div class="text-[10px] uppercase font-bold text-warm-muted">Initial Quote</div>
+                <div class="text-sm font-semibold text-warm-muted line-through">$${v.initial_quote.toLocaleString()}</div>
+              </div>
+              <div>
+                <div class="text-[10px] uppercase font-bold text-brand-700">Final Agreed</div>
+                <div class="text-base font-bold text-warm-text">$${v.final_price.toLocaleString()}</div>
+              </div>
+            </div>
+
+            <div class="text-xs text-warm-muted mb-4">
+              <span class="font-semibold text-warm-text">Perks Won:</span> ${v.perks}
+            </div>
+
+            <button onclick="playVendorEvidence('${v.evidence_quote.replace(/'/g, "\\'")}', '${v.voice_vendor}')" class="w-full py-2.5 rounded-xl bg-warm-subtle hover:bg-brand-600 hover:text-white border border-warm-border text-xs font-semibold transition flex items-center justify-center space-x-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+              <span>Play Audio Proof</span>
+            </button>
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // 3. Scout Search
+    async function runScoutSearch() {
+      const query = document.getElementById('scout-query').value;
+      const target_budget = 2000;
+      const resultsDiv = document.getElementById('scout-results');
+      resultsDiv.innerHTML = '<div class="col-span-3 text-center py-6 text-warm-muted text-sm">Scouting local business catalogs...</div>';
+
+      try {
+        const res = await fetch('/api/scout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, target_budget })
+        });
+        const list = await res.json();
+        resultsDiv.innerHTML = '';
+
+        list.forEach(item => {
+          const col = document.createElement('div');
+          col.className = 'p-5 rounded-2xl bg-warm-bg/50 border border-warm-border space-y-2';
+          col.innerHTML = `
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-warm-text">${item.name}</span>
+              <span class="text-xs font-bold text-amber-600">★ ${item.rating}</span>
+            </div>
+            <div class="text-xs text-warm-muted">${item.address}</div>
+            <div class="text-xs font-semibold text-brand-700">Catalog Quote: ~$${item.estimated_quote.toLocaleString()}</div>
+            <div class="text-[11px] text-warm-muted"><span class="font-medium">Leverage:</span> ${item.leverage_point}</div>
+          `;
+          resultsDiv.appendChild(col);
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // 4. Evidence Vault & Transcripts
+    let currentEvidenceRecords = [];
+    async function loadEvidenceRecords() {
+      const tbody = document.getElementById('evidence-tbody');
       try {
         const res = await fetch('/api/records');
-        const records = await res.json();
-        const tbody = document.getElementById('records-tbody');
+        currentEvidenceRecords = await res.json();
         tbody.innerHTML = '';
 
-        records.forEach(r => {
-          const row = document.createElement('tr');
-          row.className = "hover:bg-warm-bg/40 transition";
-          row.innerHTML = `
+        currentEvidenceRecords.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-warm-bg/40 transition cursor-pointer";
+          tr.onclick = (e) => {
+            if (e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
+              openTranscriptModal(r.id);
+            }
+          };
+
+          tr.innerHTML = `
             <td class="py-4 px-6">
               <div class="font-semibold text-warm-text">${r.vendor}</div>
               <div class="text-xs text-warm-muted">${r.category} • ${r.duration}</div>
@@ -535,22 +576,72 @@
               <div class="text-[11px] text-warm-muted">${r.perks}</div>
             </td>
             <td class="py-4 px-6 text-right">
-              <button onclick="playEvidenceSnippet('${r.audio_text.replace(/'/g, "\\'")}', '${r.voice}')" class="px-3.5 py-1.5 rounded-xl bg-warm-subtle hover:bg-brand-600 hover:text-white border border-warm-border text-xs font-semibold transition flex items-center space-x-1.5 ml-auto">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
-                <span>Play Proof</span>
-              </button>
+              <div class="flex items-center justify-end space-x-2">
+                <button onclick="playVendorEvidence('${r.evidence_quote.replace(/'/g, "\\'")}', '${r.voice}')" class="px-3.5 py-1.5 rounded-xl bg-warm-subtle hover:bg-brand-600 hover:text-white border border-warm-border text-xs font-semibold transition flex items-center space-x-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+                  <span>Play Proof</span>
+                </button>
+                <button onclick="openTranscriptModal('${r.id}')" class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-warm-subtle border border-warm-border text-xs font-semibold text-warm-muted transition">
+                  Audit
+                </button>
+              </div>
             </td>
           `;
-          tbody.appendChild(row);
+          tbody.appendChild(tr);
         });
       } catch (e) {
-        console.error("Failed to load records", e);
+        console.error(e);
       }
     }
 
-    function playEvidenceSnippet(text, voice) {
-      document.getElementById('tts-input').value = text;
-      synthesizeSpeech(text, voice);
+    async function playVendorEvidence(text, voice) {
+      try {
+        const res = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, voice: voice || "en-US-JennyNeural" })
+        });
+        const blob = await res.blob();
+        globalAudioPlayer.src = URL.createObjectURL(blob);
+        globalAudioPlayer.play();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function openTranscriptModal(dealId) {
+      const deal = currentEvidenceRecords.find(d => d.id === dealId);
+      if (!deal) return;
+
+      document.getElementById('modal-vendor-title').innerText = deal.vendor;
+      document.getElementById('modal-vendor-cat').innerText = `${deal.category} • Saved $${deal.savings} (${deal.savings_pct}%)`;
+      document.getElementById('modal-evidence-quote').innerText = `"${deal.evidence_quote}"`;
+      
+      const playBtn = document.getElementById('modal-play-proof-btn');
+      playBtn.onclick = () => playVendorEvidence(deal.evidence_quote, deal.voice);
+
+      const list = document.getElementById('modal-transcripts-list');
+      list.innerHTML = '';
+
+      deal.transcripts.forEach(t => {
+        const row = document.createElement('div');
+        const isAgent = t.speaker === 'Agent';
+        row.className = `p-3 rounded-xl text-xs leading-relaxed ${isAgent ? 'bg-brand-50 border border-brand-200/60 ml-4' : 'bg-warm-bg border border-warm-border mr-4'}`;
+        row.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-bold ${isAgent ? 'text-brand-800' : 'text-warm-text'}">${t.speaker}</span>
+            <span class="text-[10px] text-warm-muted font-mono">[${t.time}]</span>
+          </div>
+          <div class="text-warm-text">${t.text}</div>
+        `;
+        list.appendChild(row);
+      });
+
+      document.getElementById('transcript-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('transcript-modal').classList.add('hidden');
     }
 
     function scrollToSection(id) {
@@ -558,7 +649,9 @@
     }
 
     // Init
-    loadRecords();
+    loadEvidenceRecords();
+    launchWarRoom();
+    runScoutSearch();
   </script>
 </body>
 </html>
