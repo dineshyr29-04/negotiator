@@ -7,6 +7,26 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 // ── Types ──────────────────────────────────────────────────────────────────
 type TurnState = "STANDBY" | "AI_SPEAKING" | "USER_TURN" | "AI_REASONING";
 
+// Browser SpeechRecognition shim (not always in TS lib.dom)
+interface ISpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onstart: (() => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  onresult: ((e: SpeechRecognitionEvent) => void) | null;
+  start(): void;
+  stop(): void;
+}
+interface ISpeechRecognitionCtor {
+  new(): ISpeechRecognition;
+}
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
 interface TranscriptEntry {
   id: string;
   type: "agent" | "vendor" | "notice" | "whisper";
@@ -160,7 +180,7 @@ export default function HomePage() {
 
   // ── Refs ──
   const socketRef = useRef<WebSocket | null>(null);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const speechPlayerRef = useRef<HTMLAudioElement | null>(null);
   const callTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -394,8 +414,8 @@ export default function HomePage() {
 
   // ── Microphone STT ──
   function toggleMic() {
-    const SR = (window as unknown as { SpeechRecognition?: typeof SpeechRecognition; webkitSpeechRecognition?: typeof SpeechRecognition }).SpeechRecognition ||
-               (window as unknown as { SpeechRecognition?: typeof SpeechRecognition; webkitSpeechRecognition?: typeof SpeechRecognition }).webkitSpeechRecognition;
+    const win = window as unknown as { SpeechRecognition?: ISpeechRecognitionCtor; webkitSpeechRecognition?: ISpeechRecognitionCtor };
+    const SR: ISpeechRecognitionCtor | undefined = win.SpeechRecognition || win.webkitSpeechRecognition;
     if (!SR) return alert("Speech Recognition not supported in this browser.");
 
     if (!recognitionRef.current) {
@@ -404,7 +424,7 @@ export default function HomePage() {
       rec.interimResults = true;
       rec.lang = "en-US";
       rec.onstart = () => { setIsListening(true); setSttLabel("● Listening…"); setTurnState("USER_TURN"); };
-      rec.onresult = (e) => {
+      rec.onresult = (e: SpeechRecognitionEvent) => {
         let text = "";
         for (let i = e.resultIndex; i < e.results.length; i++) text += e.results[i][0].transcript;
         if (text.trim()) setVendorText(text);
