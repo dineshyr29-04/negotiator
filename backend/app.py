@@ -146,6 +146,8 @@ async def call_sync_websocket(websocket: WebSocket):
                     "dialogue_act": eval_result.get("dialogue_act", "Bargaining"),
                     "status": eval_result["status"],
                     "sentiment": eval_result["sentiment"],
+                    "phase": eval_result.get("phase", "NEGOTIATING"),
+                    "phase_label": eval_result.get("phase_label", "Negotiation in Progress"),
                     "round": eval_result["round"],
                     "whisper_used": whisper
                 })
